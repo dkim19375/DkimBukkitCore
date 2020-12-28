@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'me.dkim19375'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+    maven { url = 'https://maven.enginehub.org/repo/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
+}
