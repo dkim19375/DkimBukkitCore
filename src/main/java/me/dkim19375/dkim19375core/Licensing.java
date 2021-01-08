@@ -11,8 +11,8 @@ import java.net.URL;
 public class Licensing {
     public static IOException e;
     public static boolean v;
-    public static void validate(CoreJavaPlugin plugin, TriConsumer<Boolean, CoreJavaPlugin, IOException> validated) throws MalformedURLException {
-        UpdateChecker c = new UpdateChecker(new URL("https://gist.githubusercontent.com/dkim19375/922e76c0c5797371ff7e1c37fe8e339a/raw/"), plugin);
+    public static void validate(URL url, CoreJavaPlugin plugin, TriConsumer<Boolean, CoreJavaPlugin, IOException> validated) throws MalformedURLException {
+        UpdateChecker c = new UpdateChecker(url, plugin);
         c.getFromRaw(v -> {
             switch (v.toLowerCase()) {
                 case "true":
