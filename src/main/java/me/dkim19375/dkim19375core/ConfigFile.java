@@ -1,50 +1,39 @@
 package me.dkim19375.dkim19375core;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConfigFile {
 
     private final File configFile;
     private FileConfiguration config;
     private final File pluginDataFolder;
+    private final CoreJavaPlugin plugin;
     private final String fileName;
 
     /**
-     * @since 1.0.0
-     * @param pluginDataFolder The plugin's data directory, accessible with JavaPlugin#getDataFolder();
+     * @param plugin The CoreJavaPlugin extending class
      * @param fileName The name of the config file excluding file extensions.
      *
      * Please notice that the constructor does not yet create the YAML-configuration file. To create the file on the disk, use {@link ConfigFile#createConfig()}.
      */
-    public ConfigFile(File pluginDataFolder, String fileName) {
+    public ConfigFile(CoreJavaPlugin plugin, String fileName) {
         this.fileName = fileName;
-        configFile = new File(pluginDataFolder, fileName);
-        this.pluginDataFolder = pluginDataFolder;
+        configFile = new File(plugin.getDataFolder(), fileName);
+        this.pluginDataFolder = plugin.getDataFolder();
+        this.plugin = plugin;
         config = YamlConfiguration.loadConfiguration(configFile);
     }
 
     /**
-     * @since 1.0.0
-     * @param javaPlugin A JavaPlugin instance of the plugin using this config
-     * @param fileName The name of the config file excluding file extensions.
-     *
-     * Please notice that the constructor does not yet create the YAML-configuration file. To create the file on the disk, use {@link ConfigFile#createConfig()}.
-     */
-    public ConfigFile(JavaPlugin javaPlugin, String fileName) {
-        this.fileName = fileName;
-        configFile = new File(javaPlugin.getDataFolder(), fileName);
-        this.pluginDataFolder = javaPlugin.getDataFolder();
-        config = YamlConfiguration.loadConfiguration(configFile);
-    }
-
-    /**
-     * @since 1.0.0
      * This creates the configuration file. If the data folder is invalid, it will be created along with the config file.
      */
     public void createConfig() {
@@ -217,6 +206,71 @@ public class ConfigFile {
 
     public boolean contains(String value, boolean b) {
         return config.contains(value, b);
+    }
+
+    public InputStream getResource(String filename) {
+        if (filename == null) {
+            throw new IllegalArgumentException("Filename cannot be null");
+        }
+
+        try {
+            URL url = plugin.getClass().getClassLoader().getResource(filename);
+
+            if (url == null) {
+                return null;
+            }
+
+            URLConnection connection = url.openConnection();
+            connection.setUseCaches(false);
+            return connection.getInputStream();
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    public void saveDefaultConfig() {
+        if (!configFile.exists()) {
+            saveResource(fileName, false);
+        }
+    }
+
+    protected void saveResource(String resourcePath, boolean replace) {
+        if (resourcePath == null || resourcePath.equals("")) {
+            throw new IllegalArgumentException("ResourcePath cannot be null or empty");
+        }
+
+        resourcePath = resourcePath.replace('\\', '/');
+        InputStream in = getResource(resourcePath);
+        if (in == null) {
+            throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + fileName);
+        }
+
+        File outFile = new File(pluginDataFolder, resourcePath);
+        int lastIndex = resourcePath.lastIndexOf('/');
+        File outDir = new File(pluginDataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
+
+        if (!outDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            outDir.mkdirs();
+        }
+        Logger logger = Bukkit.getLogger();
+
+        try {
+            if (!outFile.exists() || replace) {
+                OutputStream out = new FileOutputStream(outFile);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                out.close();
+                in.close();
+            } else {
+                logger.log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+            }
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
+        }
     }
 
 }
