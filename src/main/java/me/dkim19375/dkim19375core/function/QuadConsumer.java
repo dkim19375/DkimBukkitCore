@@ -1,4 +1,4 @@
-package me.dkim19375.dkim19375core.consumers;
+package me.dkim19375.dkim19375core.function;
 
 import java.util.Objects;
 import java.util.function.Consumer;

@@ -1,4 +1,4 @@
-package me.dkim19375.dkim19375core;
+package me.dkim19375.dkim19375core.function;
 
 import org.bukkit.Location;
 

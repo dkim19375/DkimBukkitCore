@@ -1,4 +1,4 @@
-package me.dkim19375.dkim19375core.consumers;
+package me.dkim19375.dkim19375core.function;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -6,22 +6,20 @@ import java.util.function.Consumer;
 /**
  * Represents an operation that accepts two input arguments and returns no
  * result.  This is the two-arity specialization of {@link Consumer}.
- * Unlike most other functional interfaces, {@code HexaConsumer} is expected
+ * Unlike most other functional interfaces, {@code TriConsumer} is expected
  * to operate via side-effects.
  *
  * <p>This is a <a href="package-summary.html">functional interface</a>
- * whose functional method is {@link #accept(Object, Object, Object, Object, Object)}.
+ * whose functional method is {@link #accept(Object, Object, Object)}.
  *
  * @param <T> the type of the first argument to the operation
  * @param <U> the type of the second argument to the operation
  *
  * @see Consumer
  * @see java.util.function.BiConsumer
- * @see TriConsumer
- * @see QuadConsumer
  */
 @FunctionalInterface
-public interface HexaConsumer<T, U, V, W, X> {
+public interface TriConsumer<T, U, V> {
 
     /**
      * Performs this operation on the given arguments.
@@ -30,26 +28,26 @@ public interface HexaConsumer<T, U, V, W, X> {
      * @param u the second input argument
      * @param v the third input argument
      */
-    void accept(T t, U u, V v, W w, X x);
+    void accept(T t, U u, V v);
 
     /**
-     * Returns a composed {@code HexaConsumer} that performs, in sequence, this
+     * Returns a composed {@code TriConsumer} that performs, in sequence, this
      * operation followed by the {@code after} operation. If performing either
      * operation throws an exception, it is relayed to the caller of the
      * composed operation.  If performing this operation throws an exception,
      * the {@code after} operation will not be performed.
      *
      * @param after the operation to perform after this operation
-     * @return a composed {@code HexaConsumer} that performs in sequence this
+     * @return a composed {@code TriConsumer} that performs in sequence this
      * operation followed by the {@code after} operation
      * @throws NullPointerException if {@code after} is null
      */
-    default HexaConsumer<T, U, V, W, X> andThen(HexaConsumer<? super T, ? super U, ? super V, ? super W, ? super X> after) {
+    default TriConsumer<T, U, V> andThen(TriConsumer<? super T, ? super U, ? super V> after) {
         Objects.requireNonNull(after);
 
-        return (l, lm, m, rm, r) -> {
-            accept(l, lm, m, rm, r);
-            after.accept(l, lm, m, rm, r);
+        return (l, m, r) -> {
+            accept(l, m, r);
+            after.accept(l, m, r);
         };
     }
 }

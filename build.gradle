@@ -1,9 +1,14 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
+shadowJar {
+    relocate 'me.mattstudios.mfgui', 'me.dkim19375.dkim19375core.mfgui'
+}
+
 group 'me.dkim19375'
-version '1.4.0'
+version '2.0.0'
 
 repositories {
     mavenCentral()
@@ -11,10 +16,13 @@ repositories {
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url = 'https://maven.enginehub.org/repo/' }
+    maven { url = 'https://jitpack.io' }
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+    implementation 'me.mattstudios.utils:matt-framework-gui:2.0.2'
 }
