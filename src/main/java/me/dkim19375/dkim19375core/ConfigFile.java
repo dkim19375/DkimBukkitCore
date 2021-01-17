@@ -44,10 +44,8 @@ public class ConfigFile {
     public boolean createConfig() {
         boolean success = false;
         if (! configFile.exists()) {
-            if (! this.pluginDataFolder.exists()) {
-                if (this.pluginDataFolder.mkdir()) {
-                    success = true;
-                }
+            if ((!pluginDataFolder.exists()) && pluginDataFolder.mkdir()) {
+                success = true;
             }
             try {
                 if (configFile.createNewFile()) {
@@ -167,7 +165,7 @@ public class ConfigFile {
      * This deletes and recreates the file, wiping all its contents.
      */
     public boolean reset() {
-        this.deleteFile();
+        deleteFile();
         boolean success;
         try {
             success = configFile.createNewFile();
