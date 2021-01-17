@@ -32,7 +32,10 @@ public class WorldGuardUtils {
     public static World getWorldGuardWorldFromBukkitWorld(final org.bukkit.World world) {
         return BukkitAdapter.adapt(world);
     }
-    
+
+    /**
+     * @deprecated Use {@link WorldGuardUtils#testStateOfFlag(Player, StateFlag, Runnable)}
+     */
     public static boolean testStateOfFlag(final Player player, final StateFlag flag, Consumer<RegionManager> nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(player.getWorld());
@@ -47,6 +50,23 @@ public class WorldGuardUtils {
         return set.testState(lp, flag);
     }
 
+    public static boolean testStateOfFlag(final Player player, final StateFlag flag, Runnable nullRegion) {
+        RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        World world = getWorldGuardWorldFromBukkitWorld(player.getWorld());
+        RegionManager regions = c.get(world);
+        BlockVector3 position = getBlockVector3FromLocation(player.getLocation());
+        if (regions == null) {
+            nullRegion.run();
+            return false;
+        }
+        ApplicableRegionSet set = regions.getApplicableRegions(position);
+        final LocalPlayer lp = getLocalPlayerFromBukkitPlayer(player);
+        return set.testState(lp, flag);
+    }
+
+    /**
+     * @deprecated Use {@link WorldGuardUtils#testStateOfFlag(Player, Location, StateFlag, Runnable)}
+     */
     public static boolean testStateOfFlag(Player player, Location location, StateFlag flag, Consumer<RegionManager> nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(location.getWorld());
@@ -54,6 +74,20 @@ public class WorldGuardUtils {
         BlockVector3 position = getBlockVector3FromLocation(location);
         if (regions == null) {
             nullRegion.accept(null);
+            return false;
+        }
+        ApplicableRegionSet set = regions.getApplicableRegions(position);
+        final LocalPlayer lp = getLocalPlayerFromBukkitPlayer(player);
+        return set.testState(lp, flag);
+    }
+
+    public static boolean testStateOfFlag(Player player, Location location, StateFlag flag, Runnable nullRegion) {
+        RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        World world = getWorldGuardWorldFromBukkitWorld(location.getWorld());
+        RegionManager regions = c.get(world);
+        BlockVector3 position = getBlockVector3FromLocation(location);
+        if (regions == null) {
+            nullRegion.run();
             return false;
         }
         ApplicableRegionSet set = regions.getApplicableRegions(position);
