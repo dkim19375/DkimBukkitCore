@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("unused")
 public class ConfigFile {
 
     private final File configFile;
@@ -25,7 +26,9 @@ public class ConfigFile {
      *
      * Please notice that the constructor does not yet create the YAML-configuration file. To create the file on the disk, use {@link ConfigFile#createConfig()}.
      */
+    @SuppressWarnings("unused")
     public ConfigFile(CoreJavaPlugin plugin, String fileName) {
+        fileName = fileName.replace('\\', '/');
         this.fileName = fileName;
         configFile = new File(plugin.getDataFolder(), fileName);
         this.pluginDataFolder = plugin.getDataFolder();
@@ -35,18 +38,27 @@ public class ConfigFile {
 
     /**
      * This creates the configuration file. If the data folder is invalid, it will be created along with the config file.
+     *
+     * @return true if the file was successfully created
      */
-    public void createConfig() {
+    public boolean createConfig() {
+        boolean success = false;
         if (! configFile.exists()) {
             if (! this.pluginDataFolder.exists()) {
-                this.pluginDataFolder.mkdir();
+                if (this.pluginDataFolder.mkdir()) {
+                    success = true;
+                }
             }
             try {
-                configFile.createNewFile();
+                if (configFile.createNewFile()) {
+                    success = true;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                success = false;
             }
         }
+        return success;
     }
 
     /**
@@ -151,24 +163,35 @@ public class ConfigFile {
 
     /**
      * @since 1.0.0
+     * @return true if the file was successfully reset
      * This deletes and recreates the file, wiping all its contents.
      */
-    public void reset() {
+    public boolean reset() {
         this.deleteFile();
+        boolean success;
         try {
-            configFile.createNewFile();
+            success = configFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
+            success = false;
         }
+        return success;
     }
 
     /**
      * @since 1.0.0
+     * @return true if the directory was successfully wiped
      * Wipe the config file's directory, including the file itself.
      */
-    public void wipeDirectory() {
-        this.getDirectory().delete();
-        this.pluginDataFolder.mkdir();
+    public boolean wipeDirectory() {
+        boolean success = true;
+        if (!getDirectory().delete()) {
+            success = false;
+        }
+        if (!pluginDataFolder.mkdir()) {
+            success = false;
+        }
+        return success;
     }
 
     /**
@@ -230,24 +253,22 @@ public class ConfigFile {
 
     public void saveDefaultConfig() {
         if (!configFile.exists()) {
-            saveResource(fileName, false);
+            saveResource();
         }
     }
 
-    protected void saveResource(String resourcePath, boolean replace) {
-        if (resourcePath == null || resourcePath.equals("")) {
+    protected void saveResource() {
+        if (fileName == null || fileName.equals("")) {
             throw new IllegalArgumentException("ResourcePath cannot be null or empty");
         }
-
-        resourcePath = resourcePath.replace('\\', '/');
-        InputStream in = getResource(resourcePath);
+        InputStream in = getResource(fileName);
         if (in == null) {
-            throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found in " + fileName);
+            throw new IllegalArgumentException("The embedded resource '" + fileName + "' cannot be found in " + fileName);
         }
 
-        File outFile = new File(pluginDataFolder, resourcePath);
-        int lastIndex = resourcePath.lastIndexOf('/');
-        File outDir = new File(pluginDataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
+        File outFile = new File(pluginDataFolder, fileName);
+        int lastIndex = fileName.lastIndexOf('/');
+        File outDir = new File(pluginDataFolder, fileName.substring(0, Math.max(lastIndex, 0)));
 
         if (!outDir.exists()) {
             //noinspection ResultOfMethodCallIgnored
@@ -256,7 +277,7 @@ public class ConfigFile {
         Logger logger = Bukkit.getLogger();
 
         try {
-            if (!outFile.exists() || replace) {
+            if (!outFile.exists()) {
                 OutputStream out = new FileOutputStream(outFile);
                 byte[] buf = new byte[1024];
                 int len;
