@@ -10,10 +10,10 @@ public class NumberUtils {
     }
 
     public static boolean percentChance(float chance) {
-        return Math.random() <= chance;
+        return Math.random() * 100 <= chance;
     }
 
     public static boolean percentChance(int chance) {
-        return Math.random() <= chance;
+        return Math.random() * 100 <= chance;
     }
 }
