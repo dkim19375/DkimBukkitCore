@@ -11,6 +11,11 @@ public final class Entry<K, V> implements Map.Entry<K, V> {
         this.value = value;
     }
 
+    public Entry(Entry<K, V> entry) {
+        key = entry.getKey();
+        value = entry.getValue();
+    }
+
     @Override
     public K getKey() {
         return key;
