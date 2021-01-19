@@ -1,9 +1,14 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
+shadowJar {
+    relocate('org', 'me.dkim19375.dkim19375core.org')
+}
+
 group 'me.dkim19375'
-version '2.2.1'
+version '2.3.0'
 
 repositories {
     mavenCentral()
@@ -19,4 +24,5 @@ dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
+    implementation 'org.jetbrains:annotations:16.0.2'
 }
