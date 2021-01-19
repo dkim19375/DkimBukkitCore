@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Consumer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class JsonUtils {
 
     }
 
-    public static void getJson(final Consumer<JsonObject> consumer, final Consumer<IOException> exception, URL url, JavaPlugin plugin) {
+    public static void getJson(final @NotNull Consumer<JsonObject> consumer, final @NotNull Consumer<IOException> exception, final @NotNull URL url, final @NotNull JavaPlugin plugin) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             String string;
             try {
@@ -36,7 +37,7 @@ public class JsonUtils {
         });
     }
 
-    public static void getJson(final Consumer<JsonObject> consumer, final Consumer<IOException> exception, String url, JavaPlugin plugin) {
+    public static void getJson(final @NotNull Consumer<JsonObject> consumer, final @NotNull Consumer<IOException> exception, final @NotNull String url, final @NotNull JavaPlugin plugin) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             String string;
             try {

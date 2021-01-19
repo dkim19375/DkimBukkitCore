@@ -1,17 +1,18 @@
 package me.dkim19375.dkim19375core.external;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public abstract class PAPIExpansion extends PlaceholderExpansion {
+public class PAPIExpansion extends PlaceholderExpansion {
     private final String identifier;
     private final String authors;
     private final String version;
 
-    public PAPIExpansion(final JavaPlugin plugin, final @Nullable String identifier, final @Nullable String authors, final @Nullable String version) {
+    public PAPIExpansion(final @NotNull JavaPlugin plugin, final @Nullable String identifier, final @Nullable String authors, final @Nullable String version) {
         if (identifier == null) {
             this.identifier = plugin.getDescription().getName();
         } else {
@@ -39,24 +40,33 @@ public abstract class PAPIExpansion extends PlaceholderExpansion {
         return true;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
+    @NotNull
     public String getAuthor() {
         return authors;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
+    @NotNull
     public String getIdentifier() {
         return identifier;
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
+    @NotNull
     public String getVersion() {
         return version;
     }
 
     @Override
-    public abstract String onPlaceholderRequest(final Player player, final @Nullable String identifier);
+    @Nullable
+    public String onPlaceholderRequest(final Player player, final @Nullable String identifier) {
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public String onRequest(OfflinePlayer player, @NotNull String params) {
+        return null;
+    }
 }

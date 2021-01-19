@@ -13,30 +13,35 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Consumer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WorldGuardUtils {
 
-    public static LocalPlayer getLocalPlayerFromBukkitPlayer(final Player player) {
+    @NotNull
+    public static LocalPlayer getLocalPlayerFromBukkitPlayer(final @NotNull Player player) {
         return WorldGuardPlugin.inst().wrapPlayer(player);
     }
 
-    public static BlockVector3 getBlockVector3FromLocation(final Location location) {
+    @NotNull
+    public static BlockVector3 getBlockVector3FromLocation(final @NotNull Location location) {
         return BlockVector3.at(location.getX(), location.getY(), location.getZ());
     }
 
-    public static BlockVector3 getBlockVector3FromLocation(final com.sk89q.worldedit.util.Location location) {
+    @NotNull
+    public static BlockVector3 getBlockVector3FromLocation(final @NotNull com.sk89q.worldedit.util.Location location) {
         return BlockVector3.at(location.getX(), location.getY(), location.getZ());
     }
 
-
-    public static World getWorldGuardWorldFromBukkitWorld(final org.bukkit.World world) {
+    @NotNull
+    public static World getWorldGuardWorldFromBukkitWorld(final @NotNull org.bukkit.World world) {
         return BukkitAdapter.adapt(world);
     }
 
     /**
      * @deprecated Use {@link WorldGuardUtils#testStateOfFlag(Player, StateFlag, Runnable)}
      */
-    public static boolean testStateOfFlag(final Player player, final StateFlag flag, Consumer<RegionManager> nullRegion) {
+    public static boolean testStateOfFlag(final @NotNull Player player, final @NotNull StateFlag flag, final @NotNull Consumer<RegionManager> nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(player.getWorld());
         RegionManager regions = c.get(world);
@@ -50,7 +55,7 @@ public class WorldGuardUtils {
         return set.testState(lp, flag);
     }
 
-    public static boolean testStateOfFlag(final Player player, final StateFlag flag, Runnable nullRegion) {
+    public static boolean testStateOfFlag(final @NotNull Player player, final @NotNull StateFlag flag, final @NotNull Runnable nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(player.getWorld());
         RegionManager regions = c.get(world);
@@ -67,7 +72,7 @@ public class WorldGuardUtils {
     /**
      * @deprecated Use {@link WorldGuardUtils#testStateOfFlag(Player, Location, StateFlag, Runnable)}
      */
-    public static boolean testStateOfFlag(Player player, Location location, StateFlag flag, Consumer<RegionManager> nullRegion) {
+    public static boolean testStateOfFlag(final @NotNull Player player, final @NotNull Location location, final @NotNull StateFlag flag, final @NotNull Consumer<RegionManager> nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(location.getWorld());
         RegionManager regions = c.get(world);
@@ -81,7 +86,7 @@ public class WorldGuardUtils {
         return set.testState(lp, flag);
     }
 
-    public static boolean testStateOfFlag(Player player, Location location, StateFlag flag, Runnable nullRegion) {
+    public static boolean testStateOfFlag(final @NotNull Player player, final @NotNull Location location, final @NotNull StateFlag flag, final @NotNull Runnable nullRegion) {
         RegionContainer c = WorldGuard.getInstance().getPlatform().getRegionContainer();
         World world = getWorldGuardWorldFromBukkitWorld(location.getWorld());
         RegionManager regions = c.get(world);

@@ -2,6 +2,8 @@ package me.dkim19375.dkim19375core;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -12,6 +14,8 @@ public class PlayerUtils {
     public enum InputTypes {
         VALID_USERNAME, VALID_UUID, INVALID_USERNAME, INVALID_UUID, INVALID
     }
+
+    @Nullable
     public static Player getFromAll(final String uuidOrPlayer) {
         if (uuidOrPlayer.matches("^\\w{3,16}$")) {
             return Bukkit.getPlayer(uuidOrPlayer);
@@ -23,10 +27,12 @@ public class PlayerUtils {
         return null;
     }
 
+    @Nullable
     public static Player getFromAll(final UUID uuid) {
         return Bukkit.getPlayer(uuid);
     }
 
+    @NotNull
     public static InputTypes getInputType(final String uuidOrPlayer) {
         if (uuidOrPlayer.matches("^\\w{3,16}$")) {
             final Player player = Bukkit.getPlayer(uuidOrPlayer);
@@ -48,6 +54,7 @@ public class PlayerUtils {
         return InputTypes.INVALID;
     }
 
+    @Nullable
     public static Player getPlayerFromUsername(final String username) {
         if (username.matches("^\\w{3,16}$")) {
             return Bukkit.getPlayer(username);
@@ -55,11 +62,13 @@ public class PlayerUtils {
         return null;
     }
 
+    @Nullable
     public static Player getPlayerFromUUID(final String StringUUID) {
         final UUID uuid = UUID.fromString(StringUUID);
         return Bukkit.getPlayer(uuid);
     }
 
+    @Nullable
     public static Player getPlayerFromUUID(final UUID uuid) {
         return Bukkit.getPlayer(uuid);
     }
