@@ -7,34 +7,37 @@ import java.util.UUID;
 
 public class PlayerUtils {
     private PlayerUtils() {
-
     }
+
     public enum InputTypes {
         VALID_USERNAME, VALID_UUID, INVALID_USERNAME, INVALID_UUID, INVALID
     }
     public static Player getFromAll(final String uuidOrPlayer) {
         if (uuidOrPlayer.matches("^\\w{3,16}$")) {
-
             return Bukkit.getPlayer(uuidOrPlayer);
         }
         if (uuidOrPlayer.matches("[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")) {
-            UUID uuid = UUID.fromString(uuidOrPlayer);
+            final UUID uuid = UUID.fromString(uuidOrPlayer);
             return Bukkit.getPlayer(uuid);
         }
         return null;
     }
 
+    public static Player getFromAll(final UUID uuid) {
+        return Bukkit.getPlayer(uuid);
+    }
+
     public static InputTypes getInputType(final String uuidOrPlayer) {
         if (uuidOrPlayer.matches("^\\w{3,16}$")) {
-            Player player = Bukkit.getPlayer(uuidOrPlayer);
+            final Player player = Bukkit.getPlayer(uuidOrPlayer);
             if (player != null) {
                 return InputTypes.VALID_USERNAME;
             }
             return InputTypes.INVALID_USERNAME;
         }
         if (uuidOrPlayer.matches("[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}")) {
-            UUID uuid = UUID.fromString(uuidOrPlayer);
-            Player player = Bukkit.getPlayer(uuid);
+            final UUID uuid = UUID.fromString(uuidOrPlayer);
+            final Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
                 return InputTypes.VALID_UUID;
             }
@@ -53,7 +56,11 @@ public class PlayerUtils {
     }
 
     public static Player getPlayerFromUUID(final String StringUUID) {
-        UUID uuid = UUID.fromString(StringUUID);
+        final UUID uuid = UUID.fromString(StringUUID);
+        return Bukkit.getPlayer(uuid);
+    }
+
+    public static Player getPlayerFromUUID(final UUID uuid) {
         return Bukkit.getPlayer(uuid);
     }
 }
