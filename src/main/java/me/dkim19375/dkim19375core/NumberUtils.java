@@ -13,5 +13,5 @@ public class NumberUtils {
 
     public static boolean percentChance(int chance) { return Math.random() * 100 <= chance; }
 
-    public static int getRandomNumber(int minimum, int maximum) { return random.nextInt(maximum - minimum + 1) + maximum; }
+    public static int getRandomNumber(int minimum, int maximum) { return random.nextInt(maximum - minimum + 1) + minimum; }
 }
