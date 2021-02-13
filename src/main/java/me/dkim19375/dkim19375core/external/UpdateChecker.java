@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class UpdateChecker {
     private final String resourceId;
+    // Example URL: https://api.github.com/repos/dkim19375/dkim19375Core/releases/latest
     private final URL url;
     private final JavaPlugin plugin;
 
