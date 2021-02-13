@@ -7,13 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class CoreJavaPlugin extends JavaPlugin {
-    private final Logger logger = Bukkit.getLogger();
+    private static final Logger logger = Bukkit.getLogger();
 
-    public void printToConsole(String msg) {
-        getServer().getConsoleSender().sendMessage("[" + getDescription().getName() + "] " + msg);
-    }
-
-    public void log(Level level, String msg) {
+    public static void log(Level level, String msg) {
         logger.log(level, msg);
     }
 
@@ -22,4 +18,10 @@ public abstract class CoreJavaPlugin extends JavaPlugin {
 
     @Override
     public abstract void onDisable();
+
+    @Override
+    public void reloadConfig() {
+        saveDefaultConfig();
+        super.reloadConfig();
+    }
 }
