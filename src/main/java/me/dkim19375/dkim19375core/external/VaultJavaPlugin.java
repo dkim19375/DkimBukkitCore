@@ -6,6 +6,8 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.logging.Level;
+
 public abstract class VaultJavaPlugin extends CoreJavaPlugin {
     protected static Economy econ = null;
     protected static Permission perms = null;
@@ -14,7 +16,7 @@ public abstract class VaultJavaPlugin extends CoreJavaPlugin {
     @Override
     public void onEnable() {
         if (!setupEconomy() ) {
-            printToConsole("Disabled due to no Vault dependency found!");
+            log(Level.SEVERE, "Disabled due to no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
