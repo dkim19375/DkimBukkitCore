@@ -15,7 +15,7 @@ public abstract class VaultJavaPlugin extends CoreJavaPlugin {
 
     @Override
     public void onEnable() {
-        setupEconomy()
+        setupEconomy();
         setupPermissions();
         setupChat();
     }
