@@ -9,17 +9,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.logging.Level;
 
 public abstract class VaultJavaPlugin extends CoreJavaPlugin {
-    protected static Economy econ = null;
-    protected static Permission perms = null;
-    protected static Chat chat = null;
+    protected Economy econ = null;
+    protected Permission perms = null;
+    protected Chat chat = null;
 
     @Override
     public void onEnable() {
-        if (!setupEconomy() ) {
-            log(Level.SEVERE, "Disabled due to no Vault dependency found!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        setupEconomy()
         setupPermissions();
         setupChat();
     }
@@ -51,15 +47,15 @@ public abstract class VaultJavaPlugin extends CoreJavaPlugin {
         return perms != null;
     }
 
-    public static Economy getEconomy() {
+    public Economy getEconomy() {
         return econ;
     }
 
-    public static Permission getPermissions() {
+    public Permission getPermissions() {
         return perms;
     }
 
-    public static Chat getChat() {
+    public Chat getChat() {
         return chat;
     }
 }
