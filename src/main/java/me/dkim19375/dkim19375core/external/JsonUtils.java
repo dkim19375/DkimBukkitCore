@@ -55,4 +55,10 @@ public class JsonUtils {
             consumer.accept(jsonObject);
         });
     }
+
+    public static JsonObject getFromString(final String stringJson) {
+        final JsonParser parse = new JsonParser();
+        final JsonElement json = parse.parse(stringJson);
+        return json.getAsJsonObject();
+    }
 }

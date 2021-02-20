@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
 
@@ -7,10 +8,16 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '2.4.1'
+version '2.5.0'
+
+shadowJar {
+    relocate 'okio', 'me.dkim19375.dkim19375core.okio'
+    relocate 'com.squareup.okhttp', 'me.dkim19375.dkim19375core.okhttp'
+}
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
@@ -24,4 +31,5 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
     compileOnly 'org.jetbrains:annotations:16.0.2'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
 }
