@@ -30,7 +30,7 @@ fun String.toPlayer(): Player? {
  * @param page The page of the help page
  * @param commands The commands to show
  */
-fun Player.showHelpMessage(label: String, error: String? = null, page: Int = 1, commands: List<HelpMessage>, plugin: CoreJavaPlugin) {
+fun CommandSender.showHelpMessage(label: String, error: String? = null, page: Int = 1, commands: List<HelpMessage>, plugin: CoreJavaPlugin) {
     sendMessage("${ChatColor.DARK_BLUE}------------------------------------------------")
     sendMessage(
         "${ChatColor.GREEN}Bedwars v${plugin.description.version} " +
