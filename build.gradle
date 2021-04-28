@@ -1,6 +1,7 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
-    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+    id 'java-library'
 }
 
 //noinspection GroovyUnusedAssignment
@@ -8,11 +9,10 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '2.6.1'
+version '3.0.0'
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
@@ -21,6 +21,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'commons-io:commons-io:2.8.0'
     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
