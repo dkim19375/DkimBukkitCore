@@ -9,7 +9,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.0.0'
+version '3.0.1'
 
 repositories {
     mavenCentral()
@@ -21,6 +21,8 @@ repositories {
 }
 
 dependencies {
+    //noinspection DifferentStdlibGradleVersion
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compileOnly 'commons-io:commons-io:2.8.0'
     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
