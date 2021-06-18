@@ -1,7 +1,11 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+    id 'signing'
     id 'java-library'
+    id 'maven-publish'
+    id 'org.jetbrains.dokka' version '1.4.32'
+    id 'net.minecrell.licenser' version '0.4.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
 //noinspection GroovyUnusedAssignment
@@ -9,7 +13,25 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.0.2'
+version '3.1.0'
+
+compileKotlin.kotlinOptions {
+    jvmTarget = '1.8'
+}
+
+compileTestKotlin.kotlinOptions {
+    languageVersion = "1.5"
+    jvmTarget = '1.8'
+}
+
+license {
+    header = rootProject.file("LICENSE")
+    include "**/*.kt"
+}
+
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     mavenCentral()
@@ -22,11 +44,107 @@ repositories {
 
 dependencies {
     //noinspection DifferentStdlibGradleVersion
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-    compileOnly 'commons-io:commons-io:2.8.0'
+    api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    api 'io.github.dkim19375:dkimcore:1.0.2'
     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
     compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
-    compileOnly 'org.jetbrains:annotations:16.0.2'
+
+    // testing libs
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:3.2.0'
 }
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+task javadocJar(type: Jar) {
+    from dokkaJavadoc
+    classifier 'javadoc'
+}
+
+publishing {
+    def project = project
+    publications {
+        //noinspection GroovyAssignabilityCheck
+        mavenJava(MavenPublication) {
+            //noinspection GroovyAssignabilityCheck
+            groupId 'io.github.dkim19375'
+            //noinspection GroovyAssignabilityCheck
+            artifactId 'dkim-bukkit-core'
+            version project.version
+
+            //noinspection GroovyAssignabilityCheck
+            from components.kotlin
+            //noinspection GroovyAssignabilityCheck
+            artifact sourcesJar
+            //noinspection GroovyAssignabilityCheck
+            artifact javadocJar
+
+            pom {
+                //noinspection GroovyAssignabilityCheck
+                name = 'DkimBukkitCore'
+                //noinspection GroovyAssignabilityCheck
+                description = 'A kotlin library used to making spigot plugins easier!'
+                //noinspection GroovyAssignabilityCheck
+                url = 'https://github.com/dkim19375/DkimBukkitCore'
+
+                //noinspection GroovyAssignabilityCheck
+                packaging = 'jar'
+
+                licenses {
+                    license {
+                        //noinspection GroovyAssignabilityCheck
+                        name = 'MIT License'
+                        //noinspection GroovyAssignabilityCheck
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        //noinspection GroovyAssignabilityCheck
+                        id = 'dkim19375'
+                    }
+                }
+
+                scm {
+                    //noinspection GroovyAssignabilityCheck
+                    connection = 'scm:git:git://github.com/dkim19375/DkimBukkitCore.git'
+                    //noinspection GroovyAssignabilityCheck
+                    developerConnection = 'scm:git:ssh://github.com:dkim19375/DkimBukkitCore.git'
+                    //noinspection GroovyAssignabilityCheck
+                    url = 'https://github.com/dkim19375/DkimBukkitCore'
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    packageGroup.set("io.github.dkim19375")
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            username = project.findProperty("mavenUsername")
+            password = project.findProperty("mavenPassword")
+        }
+    }
+}
+
+signing {
+/*    def keyId = findProperty("signingKeyId")
+    def key = findProperty("signingKey")
+    def pass = findProperty("signingPassword")
+    useInMemoryPgpKeys(keyId, key, pass)*/
+    sign publishing.publications.mavenJava
+}
+
+tasks.jar.dependsOn licenseFormat
