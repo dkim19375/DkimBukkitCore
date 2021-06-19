@@ -57,7 +57,7 @@ fun String.toPlayer(): Player? {
 fun CommandSender.showHelpMessage(label: String, error: String? = null, page: Int = 1, commands: List<HelpMessage>, plugin: CoreJavaPlugin) {
     sendMessage("${ChatColor.DARK_BLUE}------------------------------------------------")
     sendMessage(
-        "${ChatColor.GREEN}Bedwars v${plugin.description.version} " +
+        "${ChatColor.GREEN}${plugin.description.name} v${plugin.description.version} " +
                 "Help Page: $page/${getMaxHelpPages(commands)}  <> = required  [] = optional"
     )
     val newCommands = commands.filter { msg -> hasPermission(msg.permission) }
