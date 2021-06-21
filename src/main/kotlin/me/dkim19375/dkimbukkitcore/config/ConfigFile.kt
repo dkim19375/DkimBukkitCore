@@ -190,6 +190,12 @@ class ConfigFile(private val plugin: CoreJavaPlugin, val fileName: String) {
     }
 
     private fun saveResource() {
-        Files.copy(getResource() ?: throw IllegalStateException("The embedded resource '$fileName' cannot be found!"), File(pluginDataFolder, fileName).toPath())
+        val resource = getResource()
+        if (resource == null) {
+            File(pluginDataFolder, fileName).createFileAndDirs()
+            return
+        }
+        pluginDataFolder.toPath().createDirectories()
+        Files.copy(resource, File(pluginDataFolder, fileName).toPath())
     }
 }
