@@ -30,20 +30,18 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.TabCompleter
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Consumer
 
 @API
 abstract class CoreJavaPlugin : JavaPlugin() {
-    private val files: MutableSet<ConfigFile> = mutableSetOf()
+    private val files = mutableSetOf<ConfigFile>()
+    open val defaultConfig = true
 
     override fun reloadConfig() {
-        saveDefaultConfig()
-        super.reloadConfig()
-        files.forEach { config: ConfigFile ->
-            this.reloadConfig(
-                config
-            )
+        if (defaultConfig) {
+            saveDefaultConfig()
+            super.reloadConfig()
         }
+        files.forEach(this::reloadConfig)
     }
 
     @API
@@ -81,15 +79,13 @@ abstract class CoreJavaPlugin : JavaPlugin() {
 
     @API
     fun unregisterConfig(configFileName: String) {
-        HashSet(files).forEach(Consumer { file: ConfigFile ->
+        files.toSet().forEach { file: ConfigFile ->
             if (file.fileName == configFileName) {
                 files.remove(file)
             }
-        })
+        }
     }
 
     @API
-    fun getRegisteredFiles(): Set<ConfigFile> {
-        return files
-    }
+    fun getRegisteredFiles(): Set<ConfigFile> = files.toSet()
 }

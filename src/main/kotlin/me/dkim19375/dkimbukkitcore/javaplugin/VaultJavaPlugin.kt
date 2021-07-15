@@ -44,8 +44,6 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
         setupChat()
     }
 
-    abstract override fun onDisable()
-
     @API
     protected fun setupEconomy(): Boolean {
         if (server.pluginManager.getPlugin("Vault") == null) {
