@@ -27,6 +27,7 @@ package me.dkim19375.dkimbukkitcore.function
 import me.dkim19375.dkimbukkitcore.data.HelpMessage
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.toUUID
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material

@@ -25,6 +25,7 @@
 package me.dkim19375.dkimbukkitcore.javaplugin
 
 import me.dkim19375.dkimbukkitcore.config.ConfigFile
+import me.dkim19375.dkimbukkitcore.function.setLoggingPlugin
 import me.dkim19375.dkimcore.annotation.API
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.TabCompleter
@@ -35,6 +36,11 @@ import org.bukkit.plugin.java.JavaPlugin
 abstract class CoreJavaPlugin : JavaPlugin() {
     private val files = mutableSetOf<ConfigFile>()
     open val defaultConfig = true
+
+    init {
+        @Suppress("LeakingThis")
+        setLoggingPlugin(this)
+    }
 
     override fun reloadConfig() {
         if (defaultConfig) {

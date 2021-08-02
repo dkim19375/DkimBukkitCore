@@ -25,38 +25,38 @@
 package me.dkim19375.dkimbukkitcore.function
 
 import me.clip.placeholderapi.PlaceholderAPI
+import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
 import java.util.*
-
-@API
-fun String.toUUID(): UUID? {
-    try {
-        return UUID.fromString(this)
-    } catch (ignored: IllegalArgumentException) {
-    }
-    try {
-        val uuid1: String = substring(0, 8)
-        val uuid2: String = substring(8, 12)
-        val uuid3: String = substring(12, 16)
-        val uuid4: String = substring(16, 20)
-        val uuid5: String = substring(20)
-        return UUID.fromString("$uuid1-$uuid2-$uuid3-$uuid4-$uuid5")
-    } catch (_: IndexOutOfBoundsException) {
-    } catch (_: IllegalArgumentException) {
-    }
-    return null
-}
+import java.util.logging.Level
 
 @API
 fun String.color(altColorChar: Char = '&') = ChatColor.translateAlternateColorCodes(altColorChar, this)
 
 @API
-fun String.applyPAPI(player: OfflinePlayer?) = PlaceholderAPI.setPlaceholders(player, this)
+fun String.applyPAPI(player: OfflinePlayer?): String {
+    if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        return this
+    }
+    return PlaceholderAPI.setPlaceholders(player, this)
+}
 
 @API
 fun String.formatAll(player: OfflinePlayer? = null, altColorChar: Char = '&') =
     color(altColorChar)
         .applyPAPI(player)
         .replace("%newline%", "\n")
+
+private lateinit var storedPlugin: CoreJavaPlugin
+fun setLoggingPlugin(plugin: CoreJavaPlugin) {
+    storedPlugin = plugin
+}
+
+@API
+fun logInfo(text: String, level: Level = Level.INFO) = storedPlugin.logger.log(level, text)
+
+@API
+fun String.log(level: Level = Level.INFO) = storedPlugin.logger.log(level, this)
