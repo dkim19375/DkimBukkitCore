@@ -191,11 +191,12 @@ class ConfigFile(private val plugin: CoreJavaPlugin, val fileName: String) {
 
     private fun saveResource() {
         val resource = getResource()
+        val path = File(pluginDataFolder, fileName).toPath()
         if (resource == null) {
-            File(pluginDataFolder, fileName).createFileAndDirs()
+            path.createFileAndDirs()
             return
         }
-        pluginDataFolder.toPath().createDirectories()
-        Files.copy(resource, File(pluginDataFolder, fileName).toPath())
+        path.parent.createDirectories()
+        Files.copy(resource, path)
     }
 }
