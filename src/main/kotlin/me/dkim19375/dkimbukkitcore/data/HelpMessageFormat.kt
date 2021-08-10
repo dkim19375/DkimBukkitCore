@@ -24,7 +24,13 @@
 
 package me.dkim19375.dkimbukkitcore.data
 
-import me.dkim19375.dkimcore.annotation.API
+import org.bukkit.ChatColor
 
-@API
-data class HelpMessage(val arg: String, val description: String, val permission: String?)
+data class HelpMessageFormat(
+    val topBar: String? = "${ChatColor.DARK_BLUE}------------------------------------------------",
+    val header: String? = "${ChatColor.GREEN}%name% v%version% " +
+            "Help Page: %page%/%maxpages%  <> = required  [] = optional",
+    val command: String? = "${ChatColor.AQUA}/%label% %arg% - ${ChatColor.GOLD}%description%",
+    val error: String? = "${ChatColor.RED}%error%",
+    val bottomBar: String? = "${ChatColor.DARK_BLUE}------------------------------------------------"
+)

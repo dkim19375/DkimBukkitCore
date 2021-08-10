@@ -25,6 +25,7 @@
 package me.dkim19375.dkimbukkitcore.function
 
 import me.dkim19375.dkimbukkitcore.data.HelpMessage
+import me.dkim19375.dkimbukkitcore.data.HelpMessageFormat
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
 import me.dkim19375.dkimcore.extension.toUUID
@@ -48,41 +49,87 @@ fun String.toPlayer(): Player? {
     return Bukkit.getPlayer(uuid)
 }
 
-@API
 /**
+ * Show help message
+ *
  * @param label The label of the command ran
  * @param error An error, if any
  * @param page The page of the help page
  * @param commands The commands to show
+ * @param plugin The [CoreJavaPlugin] of this plugin
+ * @param format The [HelpMessageFormat] that should be sent
  */
-fun CommandSender.showHelpMessage(label: String, error: String? = null, page: Int = 1, commands: List<HelpMessage>, plugin: CoreJavaPlugin) {
-    sendMessage("${ChatColor.DARK_BLUE}------------------------------------------------")
-    sendMessage(
-        "${ChatColor.GREEN}${plugin.description.name} v${plugin.description.version} " +
-                "Help Page: $page/${getMaxHelpPages(commands)}  <> = required  [] = optional"
+@API
+fun CommandSender.showHelpMessage(
+    label: String,
+    error: String? = null,
+    page: Int = 1,
+    commands: List<HelpMessage>,
+    plugin: CoreJavaPlugin,
+    format: HelpMessageFormat = HelpMessageFormat(),
+) {
+    val replaceMap: Map<String, String> = mapOf(
+        "name" to plugin.description.name,
+        "version" to plugin.description.version,
+        "page" to page.toString(),
+        "maxpages" to getMaxHelpPages(commands).toString(),
+        "label" to label,
+        "error" to (error ?: "")
     )
-    val newCommands = commands.filter { msg -> hasPermission(msg.permission) }
+    format.topBar?.let { str ->
+        sendMessage(str.apply {
+            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
+        })
+    }
+    format.header?.let { str ->
+        sendMessage(str.apply {
+            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
+        })
+    }
+    val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
     for (i in ((page - 1) * 7) until page * 7) {
         val cmd = newCommands.getOrNull(i) ?: continue
-        sendHelpMsgFormatted(label, cmd)
+        sendHelpMsgFormatted(cmd, format, replaceMap)
     }
     error?.let {
-        sendMessage("${ChatColor.RED}$it")
+        format.error?.let { str ->
+            sendMessage(str.apply {
+                replaceMap.forEach { str.replace("%${it.key}%", it.value) }
+            })
+        }
     }
-    sendMessage("${ChatColor.DARK_BLUE}------------------------------------------------")
+    format.bottomBar?.let { str ->
+        sendMessage(str.apply {
+            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
+        })
+    }
 }
 
 @API
 fun Permissible.getMaxHelpPages(commands: List<HelpMessage>): Int {
-    val newCommands = commands.filter { msg -> hasPermission(msg.permission) }
+    val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
     return ceil(newCommands.size.toDouble() / 7.0).toInt()
 }
 
-private fun CommandSender.sendHelpMsgFormatted(label: String, message: HelpMessage) {
-    if (!hasPermission(message.permission)) {
+fun CommandSender.sendHelpMsgFormatted(
+    message: HelpMessage,
+    format: HelpMessageFormat,
+    currentMap: Map<String, String>,
+) {
+    if (message.permission?.let { hasPermission(it) } == false) {
         return
     }
-    sendMessage("${ChatColor.AQUA}/$label ${message.arg} - ${ChatColor.GOLD}${message.description}")
+    val replaceMap = currentMap.plus(
+        mapOf(
+            "arg" to message.arg,
+            "description" to message.description
+        )
+    )
+    format.command?.let { str ->
+        sendMessage(str.apply {
+            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
+        })
+    }
 }
 
 @API
