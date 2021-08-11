@@ -30,7 +30,6 @@ import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
 import me.dkim19375.dkimcore.extension.toUUID
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
@@ -76,33 +75,25 @@ fun CommandSender.showHelpMessage(
         "label" to label,
         "error" to (error ?: "")
     )
-    format.topBar?.let { str ->
-        sendMessage(str.apply {
-            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
-        })
-    }
-    format.header?.let { str ->
-        sendMessage(str.apply {
-            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
-        })
-    }
+    sendMessageReplaced(format.topBar, replaceMap)
+    sendMessageReplaced(format.header, replaceMap)
     val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
     for (i in ((page - 1) * 7) until page * 7) {
         val cmd = newCommands.getOrNull(i) ?: continue
         sendHelpMsgFormatted(cmd, format, replaceMap)
     }
     error?.let {
-        format.error?.let { str ->
-            sendMessage(str.apply {
-                replaceMap.forEach { str.replace("%${it.key}%", it.value) }
-            })
-        }
+        sendMessageReplaced(format.error, replaceMap)
     }
-    format.bottomBar?.let { str ->
-        sendMessage(str.apply {
-            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
-        })
-    }
+    sendMessageReplaced(format.bottomBar, replaceMap)
+}
+
+fun CommandSender.sendMessageReplaced(str: String?, replaceMap: Map<String, String>) {
+    var new = str ?: return
+    sendMessage(str.let { _ ->
+        replaceMap.forEach { new = new.replace("%${it.key}%", it.value) }
+        new
+    })
 }
 
 @API
@@ -125,11 +116,7 @@ fun CommandSender.sendHelpMsgFormatted(
             "description" to message.description
         )
     )
-    format.command?.let { str ->
-        sendMessage(str.apply {
-            replaceMap.forEach { str.replace("%${it.key}%", it.value) }
-        })
-    }
+    sendMessageReplaced(format.command, replaceMap)
 }
 
 @API
