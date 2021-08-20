@@ -25,18 +25,40 @@
 package me.dkim19375.dkimbukkitcore.data
 
 import me.dkim19375.dkimcore.annotation.API
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.configuration.serialization.ConfigurationSerializable
 
 @API
-class LocationWrapper(loc: Location) {
-    val x: Int = loc.blockX
-    val y: Int = loc.blockY
-    val z: Int = loc.blockZ
-    val world: World = loc.world ?: throw IllegalStateException("World must be set!")
+data class LocationWrapper(
+    val world: World,
+    val x: Int,
+    val y: Int,
+    val z: Int,
+    val yaw: Int = 0,
+    val pitch: Int = 0,
+) : ConfigurationSerializable {
 
     @API
-    fun getLocation() = Location(world, x.toDouble() + 0.5, y.toDouble(), z.toDouble() + 0.5)
+    constructor(loc: Location) : this(
+        world = loc.world ?: throw IllegalArgumentException("World must be set!"),
+        x = loc.blockX,
+        y = loc.blockY,
+        z = loc.blockZ,
+        yaw = loc.yaw.toInt(),
+        pitch = loc.pitch.toInt(),
+    )
+
+    @API
+    fun getLocation() = Location(
+        world,
+        x.toDouble() + 0.5,
+        y.toDouble(),
+        z.toDouble() + 0.5,
+        yaw.toFloat(),
+        pitch.toFloat()
+    )
 
     @API
     fun getDistance(other: LocationWrapper): Double = getDistance(other.getLocation())
@@ -50,19 +72,49 @@ class LocationWrapper(loc: Location) {
 
         other as LocationWrapper
 
+        if (world.name != other.world.name) return false
         if (x != other.x) return false
         if (y != other.y) return false
         if (z != other.z) return false
-        if (world.name != other.world.name) return false
+        if (yaw != other.yaw) return false
+        if (pitch != other.pitch) return false
 
         return true
     }
 
+    override fun serialize(): Map<String, Any> = mapOf(
+        "world" to world.name,
+        "x" to x,
+        "y" to y,
+        "z" to z,
+        "yaw" to yaw,
+        "pitch" to pitch,
+    )
+
     override fun hashCode(): Int {
-        var result = x
+        var result = world.name.hashCode()
+        result = 31 * result + x
         result = 31 * result + y
         result = 31 * result + z
-        result = 31 * result + world.hashCode()
+        result = 31 * result + yaw
+        result = 31 * result + pitch
         return result
     }
+
+    companion object {
+        @API
+        @JvmStatic
+        fun deserialize(map: Map<String, Any>): LocationWrapper? {
+            val world = (map["world"] as? String)?.let(Bukkit::getWorld) ?: return null
+            val x = map["x"] as? Int ?: return null
+            val y = map["y"] as? Int ?: return null
+            val z = map["z"] as? Int ?: return null
+            val yaw = map["yaw"] as? Int ?: return null
+            val pitch = map["pitch"] as? Int ?: return null
+            return LocationWrapper(world, x, y, z, yaw, pitch)
+        }
+    }
 }
+
+@API
+fun Location.toWrapper(): LocationWrapper = LocationWrapper(this)
