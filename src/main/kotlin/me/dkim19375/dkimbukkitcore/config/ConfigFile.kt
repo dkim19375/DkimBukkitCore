@@ -46,7 +46,8 @@ import kotlin.math.max
 
 @API
 class ConfigFile(private val plugin: JavaPlugin, val fileName: String) {
-    private val configFile: File
+    @API
+    val configFile: File
 
     @API
     var config: FileConfiguration
