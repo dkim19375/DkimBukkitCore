@@ -30,6 +30,7 @@ import me.dkim19375.dkimcore.extension.createFileAndDirs
 import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.java.JavaPlugin
 import java.io.*
 import java.nio.file.Files
 import java.util.logging.Level
@@ -37,14 +38,14 @@ import kotlin.io.path.createDirectories
 import kotlin.math.max
 
 /**
- * @param plugin The CoreJavaPlugin extending class
+ * @param plugin The [JavaPlugin] extending class
  * @param fileName The name of the config file excluding file extensions.
  *
  * Please notice that the constructor does not yet create the YAML-configuration file. To create the file on the disk, use [ConfigFile.createConfig].
  **/
 
 @API
-class ConfigFile(private val plugin: CoreJavaPlugin, val fileName: String) {
+class ConfigFile(private val plugin: JavaPlugin, val fileName: String) {
     private val configFile: File
 
     @API
