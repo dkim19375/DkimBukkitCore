@@ -13,7 +13,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.2.4'
+version '3.2.5'
 
 compileKotlin.kotlinOptions {
     jvmTarget = '1.8'

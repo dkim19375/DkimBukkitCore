@@ -45,7 +45,7 @@ import kotlin.math.max
  **/
 
 @API
-class ConfigFile(private val plugin: JavaPlugin, val fileName: String) {
+class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFolder: Boolean = true) {
     @API
     val configFile: File
 
@@ -57,8 +57,8 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String) {
     init {
         var fileName = fileName
         fileName = fileName.replace('\\', '/')
-        configFile = File(plugin.dataFolder, fileName)
-        pluginDataFolder = plugin.dataFolder
+        configFile = if (useDataFolder) File(plugin.dataFolder, fileName) else File(fileName)
+        pluginDataFolder = if (useDataFolder) plugin.dataFolder else File("")
         config = YamlConfiguration.loadConfiguration(configFile)
     }
 
