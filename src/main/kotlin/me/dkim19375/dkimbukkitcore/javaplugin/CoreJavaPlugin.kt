@@ -24,9 +24,9 @@
 
 package me.dkim19375.dkimbukkitcore.javaplugin
 
-import me.dkim19375.dkimbukkitcore.config.ConfigFile
 import me.dkim19375.dkimbukkitcore.function.setLoggingPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.file.DataFile
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.TabCompleter
 import org.bukkit.event.Listener
@@ -34,7 +34,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 @API
 abstract class CoreJavaPlugin : JavaPlugin() {
-    private val files = mutableSetOf<ConfigFile>()
+    private val files = mutableSetOf<DataFile>()
     open val defaultConfig = true
 
     init {
@@ -51,10 +51,7 @@ abstract class CoreJavaPlugin : JavaPlugin() {
     }
 
     @API
-    fun reloadConfig(config: ConfigFile) {
-        config.saveDefaultConfig()
-        config.reload()
-    }
+    fun reloadConfig(config: DataFile) = config.reload()
 
     @API
     fun registerCommand(command: String, executor: CommandExecutor, tabCompleter: TabCompleter?) {
@@ -74,24 +71,22 @@ abstract class CoreJavaPlugin : JavaPlugin() {
     }
 
     @API
-    fun registerConfig(config: ConfigFile) {
+    fun registerConfig(config: DataFile) {
         unregisterConfig(config)
         files.add(config)
         reloadConfig(config)
     }
 
     @API
-    fun unregisterConfig(config: ConfigFile) = unregisterConfig(config.fileName)
+    fun unregisterConfig(config: DataFile) = unregisterConfig(config.fileName)
 
     @API
-    fun unregisterConfig(configFileName: String) {
-        files.toSet().forEach { file: ConfigFile ->
-            if (file.fileName == configFileName) {
-                files.remove(file)
-            }
+    fun unregisterConfig(fileName: String) = files.toSet().forEach { file: DataFile ->
+        if (file.fileName == fileName) {
+            files.remove(file)
         }
     }
 
     @API
-    fun getRegisteredFiles(): Set<ConfigFile> = files.toSet()
+    fun getRegisteredFiles(): Set<DataFile> = files.toSet()
 }

@@ -24,18 +24,15 @@
 
 package me.dkim19375.dkimbukkitcore.config
 
-import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
 import me.dkim19375.dkimcore.extension.createFileAndDirs
-import org.bukkit.Bukkit
+import me.dkim19375.dkimcore.file.DataFile
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.*
 import java.nio.file.Files
-import java.util.logging.Level
 import kotlin.io.path.createDirectories
-import kotlin.math.max
 
 /**
  * @param plugin The [JavaPlugin] extending class
@@ -45,21 +42,22 @@ import kotlin.math.max
  **/
 
 @API
-class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFolder: Boolean = true) {
-    @API
-    val configFile: File
-
+class ConfigFile(
+    private val plugin: JavaPlugin,
+    fileName: String,
+    useDataFolder: Boolean = true,
+) : DataFile(fileName.let {
+    val name = it.replace('\\', '/')
+    (if (useDataFolder) File(plugin.dataFolder, name) else File(name)).path
+}) {
     @API
     var config: FileConfiguration
         private set
     private val pluginDataFolder: File
+        get() = file.parentFile
 
     init {
-        var fileName = fileName
-        fileName = fileName.replace('\\', '/')
-        configFile = if (useDataFolder) File(plugin.dataFolder, fileName) else File(fileName)
-        pluginDataFolder = if (useDataFolder) plugin.dataFolder else File("")
-        config = YamlConfiguration.loadConfiguration(configFile)
+        config = YamlConfiguration.loadConfiguration(file)
     }
 
     /**
@@ -70,12 +68,12 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
     @API
     fun createConfig(): Boolean {
         var success = false
-        if (!configFile.exists()) {
+        if (!file.exists()) {
             if (!pluginDataFolder.exists() && pluginDataFolder.mkdir()) {
                 success = true
             }
             try {
-                if (configFile.createNewFile()) {
+                if (file.createNewFile()) {
                     success = true
                 }
             } catch (e: IOException) {
@@ -106,15 +104,19 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
      * This saves the configuration file. Saving is required every time you write to it.
      */
     @API
-    fun save() = config.save(configFile)
+    override fun save() {
+        super.save()
+        config.save(file)
+    }
 
     /**
      * @since 1.0.0
      * This reloads the configuration file, making Java acknowledge and load the new config and its values.
      */
     @API
-    fun reload() {
-        config = YamlConfiguration.loadConfiguration(configFile)
+    override fun reload() {
+        super.reload()
+        config = YamlConfiguration.loadConfiguration(file)
     }
 
     /**
@@ -124,7 +126,7 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
      * This deletes the config file.
      */
     @API
-    fun deleteFile(): Boolean = configFile.delete()
+    fun deleteFile(): Boolean = file.delete()
 
     /**
      * @since 1.0.0
@@ -142,7 +144,7 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
     @API
     fun reset() {
         deleteFile()
-        configFile.createFileAndDirs()
+        file.createFileAndDirs()
     }
 
     /**
@@ -158,7 +160,7 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
 
     /**
      * @since 1.0.0
-     * @param name The sub directory's name.
+     * @param name The sub-directory's name.
      * @return true if and only if the file or directory is
      * successfully deleted; otherwise
      * @throws IOException If the entered string has a file extension or already exists.
@@ -186,14 +188,13 @@ class ConfigFile(private val plugin: JavaPlugin, val fileName: String, useDataFo
 
     @API
     fun saveDefaultConfig() {
-        if (!configFile.exists()) {
+        if (!file.exists()) {
             saveResource()
         }
     }
 
     private fun saveResource() {
         val resource = getResource()
-        val path = File(pluginDataFolder, fileName).toPath()
         if (resource == null) {
             path.createFileAndDirs()
             return
