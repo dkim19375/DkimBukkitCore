@@ -31,6 +31,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.TabCompleter
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 
 @API
 abstract class CoreJavaPlugin : JavaPlugin() {
@@ -78,12 +79,12 @@ abstract class CoreJavaPlugin : JavaPlugin() {
     }
 
     @API
-    fun unregisterConfig(config: DataFile) = unregisterConfig(config.fileName)
+    fun unregisterConfig(config: DataFile) = unregisterConfig(config.file)
 
     @API
-    fun unregisterConfig(fileName: String) = files.toSet().forEach { file: DataFile ->
-        if (file.fileName == fileName) {
-            files.remove(file)
+    fun unregisterConfig(file: File) = files.toSet().forEach { dataFile: DataFile ->
+        if (file == dataFile.file) {
+            files.remove(dataFile)
         }
     }
 

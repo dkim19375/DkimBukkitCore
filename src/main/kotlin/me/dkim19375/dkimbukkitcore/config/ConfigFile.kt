@@ -44,11 +44,11 @@ import kotlin.io.path.createDirectories
 @API
 class ConfigFile(
     private val plugin: JavaPlugin,
-    fileName: String,
+    private val fileName: String,
     useDataFolder: Boolean = true,
 ) : DataFile(fileName.let {
     val name = it.replace('\\', '/')
-    (if (useDataFolder) File(plugin.dataFolder, name) else File(name)).path
+    if (useDataFolder) File(plugin.dataFolder, name) else File(name)
 }) {
     @API
     var config: FileConfiguration
@@ -57,7 +57,7 @@ class ConfigFile(
         get() = file.parentFile
 
     init {
-        config = YamlConfiguration.loadConfiguration(file)
+        config = YamlConfiguration.loadConfiguration(this.file)
     }
 
     /**
