@@ -57,6 +57,7 @@ class ConfigFile(
         get() = file.parentFile
 
     init {
+        saveDefaultConfig()
         config = YamlConfiguration.loadConfiguration(this.file)
     }
 
