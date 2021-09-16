@@ -116,6 +116,7 @@ class ConfigFile(
      */
     @API
     override fun reload() {
+        saveDefaultConfig()
         super.reload()
         config = YamlConfiguration.loadConfiguration(file)
     }
