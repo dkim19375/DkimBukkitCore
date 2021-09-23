@@ -13,20 +13,22 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.3.11'
+version '3.3.12'
 
+//noinspection GrUnresolvedAccess
 compileKotlin.kotlinOptions {
     jvmTarget = '1.8'
 }
 
+//noinspection GrUnresolvedAccess
 compileTestKotlin.kotlinOptions {
     languageVersion = "1.8"
     jvmTarget = '1.8'
 }
 
 license {
-    header = rootProject.file("LICENSE")
-    include "**/*.kt"
+    header = rootProject.file 'LICENSE'
+    include '**/*.kt'
 }
 
 test {
@@ -46,7 +48,7 @@ repositories {
 dependencies {
     //noinspection DifferentStdlibGradleVersion
     api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.30'
-    api 'io.github.dkim19375:dkimcore:1.1.12'
+    api 'io.github.dkim19375:dkimcore:1.1.13'
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
@@ -55,9 +57,9 @@ dependencies {
     // testing libs
     testImplementation 'org.jetbrains.kotlin:kotlin-test:1.5.30'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:3.2.0'
 }
 
@@ -129,19 +131,19 @@ publishing {
 }
 
 nexusPublishing {
-    packageGroup.set("io.github.dkim19375")
+    //noinspection GrUnresolvedAccess
+    packageGroup.set 'io.github.dkim19375'
     repositories {
+        //noinspection GrUnresolvedAccess
         sonatype {
-            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
-            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            username = project.findProperty("mavenUsername")
-            password = project.findProperty("mavenPassword")
+            nexusUrl = uri 'https://s01.oss.sonatype.org/service/local/'
+            snapshotRepositoryUrl = uri 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            username = project.findProperty 'mavenUsername'
+            password = project.findProperty 'mavenPassword'
         }
     }
 }
 
-signing {
-    sign publishing.publications.mavenJava
-}
+signing.sign publishing.publications.mavenJava
 
 tasks.wrapper.finalizedBy licenseFormat
