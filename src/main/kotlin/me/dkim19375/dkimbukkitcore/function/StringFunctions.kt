@@ -30,15 +30,16 @@ import me.dkim19375.dkimcore.annotation.API
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
-import java.util.*
 import java.util.logging.Level
+
+private val hasPAPI by lazy { Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") }
 
 @API
 fun String.color(altColorChar: Char = '&') = ChatColor.translateAlternateColorCodes(altColorChar, this)
 
 @API
 fun String.applyPAPI(player: OfflinePlayer?): String {
-    if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+    if (hasPAPI) {
         return this
     }
     return PlaceholderAPI.setPlaceholders(player, this)
@@ -60,3 +61,11 @@ fun logInfo(text: String, level: Level = Level.INFO) = storedPlugin.logger.log(l
 
 @API
 fun String.log(level: Level = Level.INFO) = storedPlugin.logger.log(level, this)
+
+@API
+fun Set<String>.formatAndRemoveColor(player: OfflinePlayer? = null): Set<String> = map {
+    it.formatAndRemoveColor(player)
+}.toSet()
+
+@API
+fun String.formatAndRemoveColor(player: OfflinePlayer? = null): String = ChatColor.stripColor(formatAll(player)) ?: ""
