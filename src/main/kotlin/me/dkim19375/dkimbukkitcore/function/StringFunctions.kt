@@ -39,7 +39,7 @@ fun String.color(altColorChar: Char = '&') = ChatColor.translateAlternateColorCo
 
 @API
 fun String.applyPAPI(player: OfflinePlayer?): String {
-    if (hasPAPI) {
+    if (!hasPAPI) {
         return this
     }
     return PlaceholderAPI.setPlaceholders(player, this)
