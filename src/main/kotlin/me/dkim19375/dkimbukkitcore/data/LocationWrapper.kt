@@ -25,6 +25,7 @@
 package me.dkim19375.dkimbukkitcore.data
 
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.setPlaceholders
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -100,6 +101,21 @@ data class LocationWrapper(
         result = 31 * result + pitch
         return result
     }
+
+    override fun toString(): String {
+        return "LocationWrapper(world=${world.name}, x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch)"
+    }
+
+    @API
+    fun format(format: String = "world: %world%, %x%, %y%, %z%"): String =
+        format.setPlaceholders(mapOf(
+            "world" to world.name,
+            "x" to x.toString(),
+            "y" to y.toString(),
+            "z" to z.toString(),
+            "yaw" to yaw.toString(),
+            "pitch" to pitch.toString()
+        ))
 
     companion object {
         @API
