@@ -24,13 +24,22 @@
 
 package me.dkim19375.dkimbukkitcore.function
 
+import kotlinx.coroutines.launch
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.IO_SCOPE
+import me.dkim19375.dkimcore.extension.SCOPE
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.concurrent.atomic.AtomicReference
 
 private val plugin: CoreJavaPlugin by lazy { JavaPlugin.getPlugin(CoreJavaPlugin::class.java) }
+@API
+val ASYNC_TYPE_BUKKIT: (() -> Unit) -> Unit = { Bukkit.getScheduler().runTaskAsynchronously(plugin, it) }
+@API
+val ASYNC_TYPE_COROUTINE: (() -> Unit) -> Unit = { SCOPE.launch { it() } }
+@API
+val ASYNC_TYPE_IO_COROUTINE: (() -> Unit) -> Unit = { IO_SCOPE.launch { it() } }
 
 @API
 fun runSync(task: () -> Unit) {
@@ -56,21 +65,29 @@ fun <T> runSyncBlocking(task: () -> T): T {
 }
 
 @API
-fun runAsync(task: () -> Unit) {
-    if (!Bukkit.isPrimaryThread()) {
+fun runAsync(
+    bukkit: Boolean = false,
+    asyncCode: (() -> Unit) -> Unit = ASYNC_TYPE_IO_COROUTINE,
+    task: () -> Unit,
+) {
+    if (!Bukkit.isPrimaryThread() && (bukkit || asyncCode == ASYNC_TYPE_BUKKIT)) {
         task()
         return
     }
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, task)
+    asyncCode(task)
 }
 
 @API
-fun <T> runAsyncBlocking(task: () -> T): T {
-    if (!Bukkit.isPrimaryThread()) {
+fun <T> runAsyncBlocking(
+    bukkit: Boolean = false,
+    asyncCode: (() -> Unit) -> Unit = ASYNC_TYPE_IO_COROUTINE,
+    task: () -> T
+): T {
+    if (!Bukkit.isPrimaryThread() && (bukkit || asyncCode == ASYNC_TYPE_BUKKIT)) {
         return task()
     }
     val atomic = AtomicReference<T>()
-    Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
+    asyncCode {
         atomic.set(task())
     }
     while (true) {

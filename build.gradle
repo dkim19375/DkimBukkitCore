@@ -13,7 +13,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.3.17'
+version '3.3.18'
 
 //noinspection GrUnresolvedAccess
 compileKotlin.kotlinOptions {
