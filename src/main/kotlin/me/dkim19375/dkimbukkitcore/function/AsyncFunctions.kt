@@ -24,84 +24,54 @@
 
 package me.dkim19375.dkimbukkitcore.function
 
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import me.dkim19375.dkimbukkitcore.coroutine.BukkitActionConsumer
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.coroutine.ActionConsumer
 import me.dkim19375.dkimcore.extension.IO_SCOPE
-import me.dkim19375.dkimcore.extension.SCOPE
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
+import org.jetbrains.annotations.Contract
 
 private val plugin: CoreJavaPlugin by lazy { JavaPlugin.getPlugin(CoreJavaPlugin::class.java) }
-@API
-val ASYNC_TYPE_BUKKIT: (() -> Unit) -> Unit = { Bukkit.getScheduler().runTaskAsynchronously(plugin, it) }
-@API
-val ASYNC_TYPE_COROUTINE: (() -> Unit) -> Unit = { SCOPE.launch { it() } }
-@API
-val ASYNC_TYPE_IO_COROUTINE: (() -> Unit) -> Unit = { IO_SCOPE.launch { it() } }
 
 @API
-fun runSync(task: () -> Unit) {
-    if (Bukkit.isPrimaryThread()) {
-        task()
-        return
-    }
-    Bukkit.getScheduler().runTask(plugin, task)
-}
+fun runSync(task: () -> Unit) = runSyncAction(task).queue()
 
 @API
-fun <T> runSyncBlocking(task: () -> T): T {
-    if (Bukkit.isPrimaryThread()) {
-        return task()
-    }
-    val finished = AtomicBoolean()
-    val atomic = AtomicReference<T>()
-    Bukkit.getScheduler().runTask(plugin) { ->
-        atomic.set(task())
-        finished.set(true)
-    }
-    while (true) {
-        if (!finished.get()) {
-            continue
-        }
-        return atomic.get()
-    }
-}
+fun <T> runSyncBlocking(task: () -> T): T = runSyncAction(task).complete()
+
+@API
+@Contract(pure = true)
+fun <T> runSyncAction(task: () -> T): ActionConsumer<T> = BukkitActionConsumer(plugin, false, task)
 
 @API
 fun runAsync(
     bukkit: Boolean = false,
-    asyncCode: (() -> Unit) -> Unit = ASYNC_TYPE_IO_COROUTINE,
+    scope: CoroutineScope = IO_SCOPE,
     task: () -> Unit,
-) {
-    if (!Bukkit.isPrimaryThread() && (bukkit || asyncCode == ASYNC_TYPE_BUKKIT)) {
-        task()
-        return
-    }
-    asyncCode(task)
+) = runAsyncAction(bukkit, scope, task).queue()
+
+@API
+fun runAsyncBukkit(task: () -> Unit) {
+    runAsyncActionBukkit(task).queue()
 }
 
 @API
-fun <T> runAsyncBlocking(
+@Contract(pure = true)
+fun <T> runAsyncActionBukkit(task: () -> T): ActionConsumer<T> = BukkitActionConsumer(plugin, true, task)
+
+@API
+fun <T> runAsyncAction(
     bukkit: Boolean = false,
-    asyncCode: (() -> Unit) -> Unit = ASYNC_TYPE_IO_COROUTINE,
-    task: () -> T
-): T {
-    if (!Bukkit.isPrimaryThread() && (bukkit || asyncCode == ASYNC_TYPE_BUKKIT)) {
-        return task()
-    }
-    val finished = AtomicBoolean()
-    val atomic = AtomicReference<T>()
-    asyncCode {
-        atomic.set(task())
-        finished.set(true)
-    }
-    while (true) {
-        if (!finished.get()) {
-            continue
+    scope: CoroutineScope = IO_SCOPE,
+    task: () -> T,
+): ActionConsumer<T> {
+    if (!Bukkit.isPrimaryThread() && bukkit) {
+        return ActionConsumer(null) {
+            task()
         }
-        return atomic.get()
     }
+    return ActionConsumer(scope, task)
 }
