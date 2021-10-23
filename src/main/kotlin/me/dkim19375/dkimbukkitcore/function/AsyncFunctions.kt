@@ -31,6 +31,7 @@ import me.dkim19375.dkimcore.extension.IO_SCOPE
 import me.dkim19375.dkimcore.extension.SCOPE
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 private val plugin: CoreJavaPlugin by lazy { JavaPlugin.getPlugin(CoreJavaPlugin::class.java) }
@@ -55,12 +56,17 @@ fun <T> runSyncBlocking(task: () -> T): T {
     if (Bukkit.isPrimaryThread()) {
         return task()
     }
+    val finished = AtomicBoolean()
     val atomic = AtomicReference<T>()
     Bukkit.getScheduler().runTask(plugin) { ->
         atomic.set(task())
+        finished.set(true)
     }
     while (true) {
-        return atomic.get() ?: continue
+        if (!finished.get()) {
+            continue
+        }
+        return atomic.get()
     }
 }
 
@@ -86,11 +92,16 @@ fun <T> runAsyncBlocking(
     if (!Bukkit.isPrimaryThread() && (bukkit || asyncCode == ASYNC_TYPE_BUKKIT)) {
         return task()
     }
+    val finished = AtomicBoolean()
     val atomic = AtomicReference<T>()
     asyncCode {
         atomic.set(task())
+        finished.set(true)
     }
     while (true) {
-        return atomic.get() ?: continue
+        if (!finished.get()) {
+            continue
+        }
+        return atomic.get()
     }
 }
