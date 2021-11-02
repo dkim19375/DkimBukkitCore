@@ -25,53 +25,110 @@
 package me.dkim19375.dkimbukkitcore.function
 
 import kotlinx.coroutines.CoroutineScope
-import me.dkim19375.dkimbukkitcore.coroutine.BukkitActionConsumer
+import me.dkim19375.dkimbukkitcore.coroutine.BukkitConsumer
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
-import me.dkim19375.dkimcore.coroutine.ActionConsumer
-import me.dkim19375.dkimcore.extension.IO_SCOPE
+import me.dkim19375.dkimcore.async.ActionConsumer
+import me.dkim19375.dkimcore.async.CoroutineConsumer
+import me.dkim19375.dkimcore.async.ExecutorsConsumer
+import me.dkim19375.dkimcore.async.SyncConsumer
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.annotations.Contract
+import java.util.concurrent.TimeUnit
 
 private val plugin: CoreJavaPlugin by lazy { JavaPlugin.getPlugin(CoreJavaPlugin::class.java) }
 
 @API
-fun runSync(task: () -> Unit) = runSyncAction(task).queue()
+fun runSync(
+    timeout: Long = 0,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> Unit
+) = getSyncAction(task).let {
+    if (timeout <= 0) {
+        it.queue()
+    } else {
+        it.queueWithSafeTimeout(timeout, unit)
+    }
+}
 
 @API
-fun <T> runSyncBlocking(task: () -> T): T = runSyncAction(task).complete()
+suspend fun <T> runSyncAwait(
+    timeout: Long = 0,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> T
+): T? = getSyncAction(task).let {
+    if (timeout <= 0) {
+        it.await()
+    } else {
+        it.awaitWithSafeTimeout(timeout, unit)
+    }
+}
+
+@API
+fun <T> runSyncBlocking(task: () -> T): T = getSyncAction(task).complete()
 
 @API
 @Contract(pure = true)
-fun <T> runSyncAction(task: () -> T): ActionConsumer<T> = BukkitActionConsumer(plugin, false, task)
+fun <T> getSyncAction(task: () -> T): ActionConsumer<T> = BukkitConsumer(plugin, false, task)
 
 @API
 fun runAsync(
     bukkit: Boolean = false,
-    scope: CoroutineScope = IO_SCOPE,
+    scope: CoroutineScope? = null,
     task: () -> Unit,
-) = runAsyncAction(bukkit, scope, task).queue()
+) = getAsyncAction(bukkit, scope, task).queue()
 
 @API
 fun runAsyncBukkit(task: () -> Unit) {
-    runAsyncActionBukkit(task).queue()
+    getAsyncActionBukkit(task).queue()
 }
 
 @API
 @Contract(pure = true)
-fun <T> runAsyncActionBukkit(task: () -> T): ActionConsumer<T> = BukkitActionConsumer(plugin, true, task)
+fun <T> getAsyncActionBukkit(task: () -> T): ActionConsumer<T> = BukkitConsumer(plugin, true, task)
 
 @API
-fun <T> runAsyncAction(
+@Contract(pure = true)
+fun <T> getAsyncAction(
     bukkit: Boolean = false,
-    scope: CoroutineScope = IO_SCOPE,
+    scope: CoroutineScope? = null,
     task: () -> T,
 ): ActionConsumer<T> {
     if (!Bukkit.isPrimaryThread() && bukkit) {
-        return ActionConsumer(null) {
-            task()
-        }
+        return SyncConsumer(task)
     }
-    return ActionConsumer(scope, task)
+    return if (scope != null) {
+        CoroutineConsumer(scope, task)
+    } else {
+        ExecutorsConsumer(task = task)
+    }
 }
+
+@API
+fun <T> runWithTimeout(
+    timeout: Long,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> T
+): T = ExecutorsConsumer(task = task).completeWithTimeout(timeout, unit)
+
+@API
+fun <T> runWithSafeTimeout(
+    timeout: Long,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> T
+): T? = ExecutorsConsumer(task = task).completeWithSafeTimeout(timeout, unit)
+
+@API
+suspend fun <T> awaitWithTimeout(
+    timeout: Long,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> T
+): T = ExecutorsConsumer(task = task).awaitWithTimeout(timeout, unit)
+
+@API
+suspend fun <T> awaitWithSafeTimeout(
+    timeout: Long,
+    unit: TimeUnit = TimeUnit.MILLISECONDS,
+    task: () -> T
+): T? = ExecutorsConsumer(task = task).awaitWithSafeTimeout(timeout, unit)
