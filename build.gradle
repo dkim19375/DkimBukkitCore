@@ -13,7 +13,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.3.22'
+version '3.3.23'
 
 //noinspection GrUnresolvedAccess
 compileKotlin.kotlinOptions {
@@ -48,7 +48,7 @@ repositories {
 dependencies {
     //noinspection DifferentStdlibGradleVersion
     api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
-    api 'io.github.dkim19375:dkimcore:1.2.1'
+    api 'io.github.dkim19375:dkimcore:1.2.2'
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.10'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.4'
