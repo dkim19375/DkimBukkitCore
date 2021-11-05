@@ -30,16 +30,22 @@ import me.dkim19375.dkimcore.extension.setPlaceholders
 import org.bukkit.Location
 
 @API
-fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPlaces: Int? = 2): String =
-    format.setPlaceholders(mapOf(
-        "world" to (world?.name ?: "none"),
-        "x" to x.setDecimalPlacesSafe(decimalPlaces),
-        "y" to y.setDecimalPlacesSafe(decimalPlaces),
-        "z" to z.setDecimalPlacesSafe(decimalPlaces),
-        "yaw" to yaw.setDecimalPlacesSafe(decimalPlaces),
-        "pitch" to pitch.setDecimalPlacesSafe(decimalPlaces)
+fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPlaces: Int? = 2): String {
+    val world = world?.name ?: "none"
+    val x = x.setDecimalPlaces(decimalPlaces).toString()
+    val y = y.setDecimalPlaces(decimalPlaces).toString()
+    val z = z.setDecimalPlaces(decimalPlaces).toString()
+    val yaw = yaw.setDecimalPlaces(decimalPlaces).toString()
+    val pitch = pitch.setDecimalPlaces(decimalPlaces).toString()
+    if (format == "world: %world%, %x%, %y%, %z%") {
+        return "world: $world, $x, $y, $z"
+    }
+    return format.setPlaceholders(mapOf(
+        "world" to world,
+        "x" to x,
+        "y" to y,
+        "z" to z,
+        "yaw" to yaw,
+        "pitch" to pitch
     ))
-
-private fun Float.setDecimalPlacesSafe(amount: Int?): String = setDecimalPlaces(amount).toString()
-
-private fun Double.setDecimalPlacesSafe(amount: Int?): String = setDecimalPlaces(amount).toString()
+}
