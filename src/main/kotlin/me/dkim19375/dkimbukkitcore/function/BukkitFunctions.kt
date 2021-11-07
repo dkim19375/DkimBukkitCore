@@ -27,7 +27,12 @@ package me.dkim19375.dkimbukkitcore.function
 import me.dkim19375.dkimcore.annotation.API
 import me.dkim19375.dkimcore.extension.setDecimalPlaces
 import me.dkim19375.dkimcore.extension.setPlaceholders
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Entity
+import java.lang.reflect.Method
+import java.util.*
 
 @API
 fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPlaces: Int? = 2): String {
@@ -48,4 +53,48 @@ fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPla
         "yaw" to yaw,
         "pitch" to pitch
     ))
+}
+
+private var getHandle: Method? = null
+
+private var getEntity: Method? = null
+
+private var getBukkitEntity: Method? = null
+
+// Pair<Pair<getHandle, getEntity>, getBukkitEntity>
+private fun init(): Pair<Pair<Method, Method>, Method> {
+    val world = Bukkit.getWorlds().first()
+    val tempHandle = world::class.java.getMethod("getHandle")
+    val tempEntity = tempHandle.invoke(world)::class.java.getMethod("getEntity", UUID::class.java)
+    val entity = world.spawn(Location(world, 0.0, 150.0, 0.0), ArmorStand::class.java)
+    entity.isVisible = false
+    entity.setGravity(false) // just to be safe idk
+    try {
+        val tempBukkitEntity =
+            tempEntity.invoke(tempHandle.invoke(world), entity.uniqueId)::class.java.getMethod("getBukkitEntity")
+        getHandle = tempHandle
+        getEntity = tempEntity
+        getBukkitEntity = tempBukkitEntity
+        return (tempHandle to tempEntity) to tempBukkitEntity
+    } finally {
+        entity.remove()
+    }
+}
+
+private val hasNewGetEntity = runCatching { Bukkit.getEntity(UUID.randomUUID()) }.isSuccess
+
+@API
+fun UUID.getEntity(): Entity? {
+    if (hasNewGetEntity) {
+        return Bukkit.getEntity(this)
+    }
+    val getHandle = getHandle ?: init().first.first
+    val getEntity = getEntity ?: init().first.second
+    val getBukkitEntity = getBukkitEntity ?: init().second
+    for (world in Bukkit.getWorlds()) {
+        return getBukkitEntity.invoke(
+            getEntity.invoke(getHandle.invoke(world), this) ?: continue
+        ) as? Entity ?: continue
+    }
+    return null
 }
