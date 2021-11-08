@@ -138,4 +138,4 @@ fun Player.playSound(sound: Sound, volume: Float = 0.7f, pitch: Float = 1.0f) {
 }
 
 @API
-fun Set<UUID>.getPlayers(): Set<Player> = map(Bukkit::getPlayer).filterNonNull().toSet()
+fun Iterable<UUID>.getPlayers(): Set<Player> = map(Bukkit::getPlayer).filterNonNull().toSet()
