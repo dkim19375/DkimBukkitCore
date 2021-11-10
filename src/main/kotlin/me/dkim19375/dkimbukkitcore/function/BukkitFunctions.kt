@@ -31,6 +31,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.util.Vector
 import java.lang.reflect.Method
 import java.util.*
 
@@ -52,6 +53,21 @@ fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPla
         "z" to z,
         "yaw" to yaw,
         "pitch" to pitch
+    ))
+}
+
+@API
+fun Vector.format(format: String = "%x%, %y%, %z%", decimalPlaces: Int? = 2): String {
+    val x = x.setDecimalPlaces(decimalPlaces).toString()
+    val y = y.setDecimalPlaces(decimalPlaces).toString()
+    val z = z.setDecimalPlaces(decimalPlaces).toString()
+    if (format == "%x%, %y%, %z%") {
+        return "$x, $y, $z"
+    }
+    return format.setPlaceholders(mapOf(
+        "x" to x,
+        "y" to y,
+        "z" to z,
     ))
 }
 

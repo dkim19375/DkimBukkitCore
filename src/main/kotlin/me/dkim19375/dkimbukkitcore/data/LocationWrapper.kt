@@ -25,6 +25,7 @@
 package me.dkim19375.dkimbukkitcore.data
 
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.setDecimalPlaces
 import me.dkim19375.dkimcore.extension.setPlaceholders
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -107,8 +108,11 @@ data class LocationWrapper(
     }
 
     @API
-    fun format(format: String = "world: %world%, %x%, %y%, %z%"): String =
-        format.setPlaceholders(mapOf(
+    fun format(format: String = "world: %world%, %x%, %y%, %z%"): String {
+        if (format == "world: %world%, %x%, %y%, %z%") {
+            return "world: ${world.name}, $x, $y, $z"
+        }
+        return format.setPlaceholders(mapOf(
             "world" to world.name,
             "x" to x.toString(),
             "y" to y.toString(),
@@ -116,6 +120,7 @@ data class LocationWrapper(
             "yaw" to yaw.toString(),
             "pitch" to pitch.toString()
         ))
+    }
 
     companion object {
         @API
