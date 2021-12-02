@@ -25,12 +25,9 @@
 package me.dkim19375.dkimbukkitcore.function
 
 import me.dkim19375.dkimcore.annotation.API
-import me.dkim19375.dkimcore.extension.setDecimalPlaces
-import me.dkim19375.dkimcore.extension.setPlaceholders
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.entity.ArmorStand
-import org.bukkit.entity.Entity
+import me.dkim19375.dkimcore.extension.*
+import org.bukkit.*
+import org.bukkit.entity.*
 import org.bukkit.util.Vector
 import java.lang.reflect.Method
 import java.util.*
@@ -71,23 +68,32 @@ fun Vector.format(format: String = "%x%, %y%, %z%", decimalPlaces: Int? = 2): St
     ))
 }
 
+// CraftWorld#getHandle
 private var getHandle: Method? = null
 
+// WorldServer#getEntity(UUID)
 private var getEntity: Method? = null
 
+// (NMS) Entity.getBukkitEntity()
 private var getBukkitEntity: Method? = null
 
 // Pair<Pair<getHandle, getEntity>, getBukkitEntity>
 private fun init(): Pair<Pair<Method, Method>, Method> {
-    val world = Bukkit.getWorlds().first()
-    val tempHandle = world::class.java.getMethod("getHandle")
-    val tempEntity = tempHandle.invoke(world)::class.java.getMethod("getEntity", UUID::class.java)
-    val entity = world.spawn(Location(world, 0.0, 150.0, 0.0), ArmorStand::class.java)
+    val world = Bukkit.getWorlds().first().checkNull("world")
+    val tempHandle = world::class.java.getMethod("getHandle").checkNull("tempHandle")
+    val tempEntity =
+        tempHandle.invoke(world)::class.java.getMethod("getEntity", UUID::class.java).checkNull("tempEntity")
+    val entity = world.spawn(Location(world, 0.0, 150.0, 0.0), ArmorStand::class.java).checkNull("entity")
     entity.isVisible = false
     entity.setGravity(false) // just to be safe idk
     try {
-        val tempBukkitEntity =
-            tempEntity.invoke(tempHandle.invoke(world), entity.uniqueId)::class.java.getMethod("getBukkitEntity")
+        /*val tempBukkitEntity = tempEntity.invoke(
+            tempHandle.invoke(world).checkNull("tempHandle invoked"), entity.uniqueId
+        ).checkNull("tempEntity invoked")::class.java.getMethod("getBukkitEntity").checkNull("tempBukkitEntity")*/
+        val tempBukkitEntity = entity::class.java.getMethod("getHandle")
+            .checkNull("entity getHandle")
+            .invoke(entity)::class.java
+            .getMethod("getBukkitEntity").checkNull("tempBukkitEntity")
         getHandle = tempHandle
         getEntity = tempEntity
         getBukkitEntity = tempBukkitEntity
@@ -97,10 +103,20 @@ private fun init(): Pair<Pair<Method, Method>, Method> {
     }
 }
 
-private val hasNewGetEntity = runCatching { Bukkit.getEntity(UUID.randomUUID()) }.isSuccess
+private fun <T : Any> T?.checkNull(name: String): T {
+    if (this == null) {
+        throw IllegalStateException("$name is null!")
+    }
+    return this
+}
+
+private val hasNewGetEntity by lazy { runCatching { Bukkit.getEntity(UUID.randomUUID()) }.isSuccess }
 
 @API
 fun UUID.getEntity(): Entity? {
+    if (!Bukkit.isPrimaryThread()) {
+        throw IllegalStateException("Async entity get!")
+    }
     if (hasNewGetEntity) {
         return Bukkit.getEntity(this)
     }
