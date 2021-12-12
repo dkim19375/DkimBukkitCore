@@ -13,7 +13,7 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding 'UTF-8'
 
 group 'me.dkim19375'
-version '3.3.29'
+version '3.3.30'
 
 //noinspection GrUnresolvedAccess
 compileKotlin.kotlinOptions {
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    api 'io.github.dkim19375:dkimcore:1.2.5'
+    api 'io.github.dkim19375:dkimcore:1.2.6'
     //noinspection DifferentStdlibGradleVersion
     api 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0'
 
