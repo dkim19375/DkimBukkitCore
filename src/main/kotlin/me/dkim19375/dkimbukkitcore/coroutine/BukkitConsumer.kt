@@ -24,11 +24,11 @@
 
 package me.dkim19375.dkimbukkitcore.coroutine
 
-import me.dkim19375.dkimcore.async.ActionConsumer
+import me.dkim19375.dkimcore.async.*
+import me.dkim19375.dkimcore.extension.getResult
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import kotlin.coroutines.Continuation
 
 class BukkitConsumer<T>(
@@ -104,7 +104,7 @@ class BukkitConsumer<T>(
         failure: (Continuation<T>, Throwable) -> Unit,
     ): T = throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
 
-    override fun complete(): T = submit().get()
+    override fun complete(): T = submit().getResult().getOrThrow()
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
