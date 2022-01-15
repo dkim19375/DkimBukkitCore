@@ -25,11 +25,8 @@
 package me.dkim19375.dkimbukkitcore.data
 
 import me.dkim19375.dkimcore.annotation.API
-import me.dkim19375.dkimcore.extension.setDecimalPlaces
 import me.dkim19375.dkimcore.extension.setPlaceholders
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
 @API
@@ -67,6 +64,20 @@ data class LocationWrapper(
 
     @API
     fun getDistance(other: Location): Double = getLocation().distance(other)
+
+    @API
+    fun coordsEquals(other: LocationWrapper?): Boolean {
+        other ?: return false
+
+        if (this === other) return true
+
+        if (world.name != other.world.name) return false
+        if (x != other.x) return false
+        if (y != other.y) return false
+        if (z != other.z) return false
+
+        return true
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
