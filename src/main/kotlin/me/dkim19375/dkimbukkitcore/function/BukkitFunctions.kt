@@ -54,6 +54,10 @@ fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPla
 }
 
 @API
+fun Location.coordsEquals(other: Location): Boolean =
+    world?.name == other.world?.name && x == other.x && y == other.y && z == other.z
+
+@API
 fun Vector.format(format: String = "%x%, %y%, %z%", decimalPlaces: Int? = 2): String {
     val x = x.setDecimalPlaces(decimalPlaces).toString()
     val y = y.setDecimalPlaces(decimalPlaces).toString()
