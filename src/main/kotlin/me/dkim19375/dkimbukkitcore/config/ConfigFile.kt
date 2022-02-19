@@ -105,6 +105,7 @@ class ConfigFile(
      * This saves the configuration file. Saving is required every time you write to it.
      */
     @API
+    @Synchronized
     override fun save() {
         super.save()
         config.save(file)
@@ -115,6 +116,7 @@ class ConfigFile(
      * This reloads the configuration file, making Java acknowledge and load the new config and its values.
      */
     @API
+    @Synchronized
     override fun reload() {
         saveDefaultConfig()
         super.reload()
