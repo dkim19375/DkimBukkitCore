@@ -104,31 +104,3 @@ fun <T> getAsyncAction(
         ExecutorsConsumer(task = task)
     }
 }
-
-@API
-fun <T> runWithTimeout(
-    timeout: Long,
-    unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> T
-): T = ExecutorsConsumer(task = task).completeWithTimeout(timeout, unit)
-
-@API
-fun <T> runWithSafeTimeout(
-    timeout: Long,
-    unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> T
-): T? = ExecutorsConsumer(task = task).completeWithSafeTimeout(timeout, unit)
-
-@API
-suspend fun <T> awaitWithTimeout(
-    timeout: Long,
-    unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> T
-): T = ExecutorsConsumer(task = task).awaitWithTimeout(timeout, unit)
-
-@API
-suspend fun <T> awaitWithSafeTimeout(
-    timeout: Long,
-    unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> T
-): T? = ExecutorsConsumer(task = task).awaitWithSafeTimeout(timeout, unit)

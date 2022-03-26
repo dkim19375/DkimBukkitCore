@@ -133,9 +133,8 @@ fun Player.getItemAmount(type: Material): Int {
 }
 
 @API
-fun Player.playSound(sound: Sound, volume: Float = 0.7f, pitch: Float = 1.0f) {
+fun Player.playSound(sound: Sound, volume: Float = 0.7f, pitch: Float = 1.0f) =
     playSound(location, sound, volume, pitch)
-}
 
 @API
-fun Iterable<UUID>.getPlayers(): Set<Player> = map(Bukkit::getPlayer).filterNonNull().toSet()
+fun Iterable<UUID>.getPlayers(): Set<Player> = mapNotNull(Bukkit::getPlayer).toSet()
