@@ -29,63 +29,46 @@ import me.dkim19375.dkimbukkitcore.function.getJson
 import me.dkim19375.dkimcore.annotation.API
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.util.Consumer
 import java.io.IOException
 import java.net.URL
-import java.util.*
 
 @API
 class UpdateChecker(
     private val resourceId: String? = null,
     // Example URL: https://api.github.com/repos/dkim19375/DkimBukkitCore/releases/latest
     private val url: URL? = null,
-    private val plugin: JavaPlugin
+    private val plugin: JavaPlugin,
 ) {
 
     @API
     fun getSpigotVersion(version: (String) -> Unit, exception: (IOException) -> Unit) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
             try {
-                URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").openStream()
-                    .use { inputStream ->
-                        Scanner(inputStream).use { scanner ->
-                            if (scanner.hasNext()) {
-                                version(scanner.next())
-                            }
-                        }
-                    }
+                version(URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").readText())
             } catch (e: IOException) {
                 exception(e)
             }
-        })
+        }
     }
 
     @API
-    fun getFromRaw(version: Consumer<String>, exception: (IOException) -> Unit) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-            if (url != null) {
-                try {
-                    url.openStream().use { inputStream ->
-                        Scanner(inputStream).use { scanner ->
-                            if (scanner.hasNext()) {
-                                version.accept(scanner.next())
-                            }
-                        }
-                    }
-                } catch (e: IOException) {
-                    exception(e)
-                }
+    fun getFromRaw(version: (String) -> Unit, exception: (IOException) -> Unit) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+            try {
+                url?.readText()?.let(version)
+            } catch (e: IOException) {
+                exception(e)
             }
-        })
+        }
     }
 
     @API
-    fun getFromGithubJson(version: Consumer<String>, exception: (IOException) -> Unit) {
+    fun getFromGithubJson(version: (String) -> Unit, exception: (IOException) -> Unit) {
         val url = url ?: throw IllegalStateException()
-        url.getJson({ j: JsonObject ->
-            val element = j["tag_name"]
+        url.getJson({ jsonObject: JsonObject ->
+            val element = jsonObject["tag_name"]
             val tag = element.asString
-            version.accept(tag)
+            version(tag)
         }, exception, plugin)
     }
 }

@@ -30,7 +30,9 @@ import me.dkim19375.dkimcore.file.DataFile
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.*
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
 import java.nio.file.Files
 import kotlin.io.path.createDirectories
 
@@ -185,7 +187,11 @@ class ConfigFile(
      * @return true or false
      * This returns true if the config contains the given value.
      */
-    fun contains(value: String, ignoreDefault: Boolean = true): Boolean = config.contains(value, ignoreDefault)
+    fun contains(value: String, ignoreDefault: Boolean = true): Boolean = if (ignoreDefault) {
+        config.isSet(value)
+    } else {
+        config.contains(value)
+    }
 
     private fun getResource(): InputStream? =
         plugin.javaClass.classLoader.getResourceAsStream(fileName) ?: plugin.javaClass.getResourceAsStream(fileName)

@@ -25,12 +25,16 @@
 package me.dkim19375.dkimbukkitcore.function
 
 import me.dkim19375.dkimcore.annotation.API
-import me.dkim19375.dkimcore.extension.*
-import org.bukkit.*
-import org.bukkit.entity.*
+import me.dkim19375.dkimcore.extension.runCatchingOrNull
+import me.dkim19375.dkimcore.extension.setDecimalPlaces
+import me.dkim19375.dkimcore.extension.setPlaceholders
+import org.bukkit.Bukkit
+import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
 import java.lang.reflect.Method
-import java.util.*
+import java.util.UUID
 
 @API
 fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPlaces: Int? = 2): String {
@@ -43,14 +47,16 @@ fun Location.format(format: String = "world: %world%, %x%, %y%, %z%", decimalPla
     if (format == "world: %world%, %x%, %y%, %z%") {
         return "world: $world, $x, $y, $z"
     }
-    return format.setPlaceholders(mapOf(
-        "world" to world,
-        "x" to x,
-        "y" to y,
-        "z" to z,
-        "yaw" to yaw,
-        "pitch" to pitch
-    ))
+    return format.setPlaceholders(
+        mapOf(
+            "world" to world,
+            "x" to x,
+            "y" to y,
+            "z" to z,
+            "yaw" to yaw,
+            "pitch" to pitch
+        )
+    )
 }
 
 @API
@@ -65,11 +71,13 @@ fun Vector.format(format: String = "%x%, %y%, %z%", decimalPlaces: Int? = 2): St
     if (format == "%x%, %y%, %z%") {
         return "$x, $y, $z"
     }
-    return format.setPlaceholders(mapOf(
-        "x" to x,
-        "y" to y,
-        "z" to z,
-    ))
+    return format.setPlaceholders(
+        mapOf(
+            "x" to x,
+            "y" to y,
+            "z" to z,
+        )
+    )
 }
 
 // CraftWorld#getHandle
@@ -114,15 +122,20 @@ private fun <T : Any> T?.checkNull(name: String): T {
     return this
 }
 
-private val hasNewGetEntity by lazy { runCatching { Bukkit.getEntity(UUID.randomUUID()) }.isSuccess }
+private val getEntityMethod: Method? by lazy {
+    runCatchingOrNull {
+        Bukkit::class.java.getMethod("getEntity", UUID::class.java)
+    }
+}
 
 @API
 fun UUID.getEntity(): Entity? {
     if (!Bukkit.isPrimaryThread()) {
         throw IllegalStateException("Async entity get!")
     }
-    if (hasNewGetEntity) {
-        return Bukkit.getEntity(this)
+    val getEntityMethod = getEntityMethod
+    if (getEntityMethod != null) {
+        return getEntityMethod.invoke(null, this) as Entity?
     }
     val getHandle = getHandle ?: init().first.first
     val getEntity = getEntity ?: init().first.second

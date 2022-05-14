@@ -34,28 +34,24 @@ import java.net.MalformedURLException
 import java.net.URL
 
 fun URL.getJson(
-    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin
+    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin,
 ) {
-    val runnable = Runnable {
-        @Suppress("UnstableApiUsage")
-        val string: String = try {
-            readText()
-        } catch (e: IOException) {
-            exception(e)
-            return@Runnable
-        }
-        consumer(string.toJsonObject())
-    }
-    if (Bukkit.isPrimaryThread()) {
-        runnable.run()
+    if (!Bukkit.isPrimaryThread()) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) { getJson(consumer, exception, plugin) }
         return
     }
-    Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable)
+    val string: String = try {
+        readText()
+    } catch (e: IOException) {
+        exception(e)
+        return
+    }
+    consumer(string.toJsonObject())
 }
 
 @API
 fun String.getJson(
-    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin
+    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin,
 ) {
     try {
         URL(this).getJson(consumer, exception, plugin)
