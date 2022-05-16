@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.dkim19375"
-version = "3.3.37"
+version = "3.3.38"
 
 val javaVersion = "1.8"
 
@@ -51,12 +51,12 @@ dependencies {
 
 val sourcesJar by tasks.creating(Jar::class) {
     archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").java.srcDirs)
+    from(sourceSets.main.get().allSource.srcDirs)
 }
 
 val javadocJar by tasks.creating(Jar::class) {
     archiveClassifier.set("javadoc")
-    from(tasks.javadoc)
+    from(tasks.dokkaJavadoc)
 }
 
 publishing {
