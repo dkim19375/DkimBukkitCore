@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     api("io.github.dkim19375:dkimcore:1.3.1")
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21")
+    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0")
 
     compileOnly("me.clip:placeholderapi:2.11.1")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
