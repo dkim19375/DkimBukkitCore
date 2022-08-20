@@ -47,8 +47,8 @@ fun String.applyPAPI(player: OfflinePlayer?): String {
 
 @API
 fun String.formatAll(player: OfflinePlayer? = null, altColorChar: Char = '&') =
-    color(altColorChar)
-        .applyPAPI(player)
+    applyPAPI(player)
+        .color(altColorChar)
         .replace("%newline%", "\n")
 
 private lateinit var storedPlugin: CoreJavaPlugin
