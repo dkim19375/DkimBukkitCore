@@ -35,7 +35,7 @@ import java.util.logging.Level
 private val hasPAPI by lazy { Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") }
 
 @API
-fun String.color(altColorChar: Char = '&') = ChatColor.translateAlternateColorCodes(altColorChar, this)
+fun String.color(altColorChar: Char = '&'): String = ChatColor.translateAlternateColorCodes(altColorChar, this)
 
 @API
 fun String.applyPAPI(player: OfflinePlayer?): String {
