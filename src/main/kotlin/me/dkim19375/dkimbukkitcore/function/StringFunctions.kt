@@ -27,6 +27,7 @@ package me.dkim19375.dkimbukkitcore.function
 import me.clip.placeholderapi.PlaceholderAPI
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.runCatchingOrNull
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
@@ -49,6 +50,7 @@ fun String.applyPAPI(player: OfflinePlayer?): String {
 fun String.formatAll(player: OfflinePlayer? = null, altColorChar: Char = '&') =
     applyPAPI(player)
         .color(altColorChar)
+        .formatLegacyHex()
         .replace("%newline%", "\n")
 
 private lateinit var storedPlugin: CoreJavaPlugin
@@ -69,3 +71,17 @@ fun Set<String>.formatAndRemoveColor(player: OfflinePlayer? = null): Set<String>
 
 @API
 fun String.formatAndRemoveColor(player: OfflinePlayer? = null): String = ChatColor.stripColor(formatAll(player)) ?: ""
+
+private val hexRegex = "(#[A-f\\d]{6})".toRegex()
+private val chatColorOfMethod by lazy {
+    runCatchingOrNull {
+        net.md_5.bungee.api.ChatColor::class.java.getMethod("of", String::class.java)
+    }
+}
+
+@API
+fun String.formatLegacyHex(): String = chatColorOfMethod?.let { method ->
+    hexRegex.replace(this) { result ->
+        method.invoke(null, result.value).toString()
+    }
+} ?: this
