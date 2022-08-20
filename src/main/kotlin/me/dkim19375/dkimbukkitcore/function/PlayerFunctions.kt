@@ -67,16 +67,21 @@ fun CommandSender.showHelpMessage(
     plugin: CoreJavaPlugin,
     format: HelpMessageFormat = HelpMessageFormat(),
 ) {
+    val maxPages = getMaxHelpPages(commands)
     val replaceMap: Map<String, String> = mapOf(
         "name" to plugin.description.name,
         "version" to plugin.description.version,
         "page" to page.toString(),
-        "maxpages" to getMaxHelpPages(commands).toString(),
+        "maxpages" to maxPages.toString(),
         "label" to label,
         "error" to (error ?: "")
     )
     sendMessageReplaced(format.topBar, replaceMap)
-    sendMessageReplaced(format.header, replaceMap)
+    val header = format.header
+    if (header != null) {
+        val helpPageHeader = if (maxPages <= 1) "" else format.helpPageHeader ?: ""
+        sendMessageReplaced(header + helpPageHeader, replaceMap)
+    }
     val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
     for (i in ((page - 1) * 7) until page * 7) {
         val cmd = newCommands.getOrNull(i) ?: continue

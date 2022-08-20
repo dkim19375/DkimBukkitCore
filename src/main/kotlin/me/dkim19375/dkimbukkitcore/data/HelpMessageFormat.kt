@@ -27,10 +27,10 @@ package me.dkim19375.dkimbukkitcore.data
 import org.bukkit.ChatColor
 
 data class HelpMessageFormat(
-    val topBar: String? = "${ChatColor.DARK_BLUE}------------------------------------------------",
-    val header: String? = "${ChatColor.GREEN}%name% v%version% " +
-            "Help Page: %page%/%maxpages%  <> = required  [] = optional",
-    val command: String? = "${ChatColor.AQUA}/%label% %arg% - ${ChatColor.GOLD}%description%",
+    val topBar: String? = null,
+    val header: String? = "${ChatColor.YELLOW}%name% ${ChatColor.GRAY}v%version%",
+    val helpPageHeader: String? = "${ChatColor.GRAY} Help Page: %page%/%maxpages%",
+    val command: String? = "${ChatColor.YELLOW}/%label% ${ChatColor.GOLD}%arg% ${ChatColor.DARK_GRAY}- ${ChatColor.GRAY}%description%",
     val error: String? = "${ChatColor.RED}%error%",
-    val bottomBar: String? = "${ChatColor.DARK_BLUE}------------------------------------------------"
+    val bottomBar: String? = null,
 )
