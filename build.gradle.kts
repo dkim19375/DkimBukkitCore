@@ -4,7 +4,7 @@ plugins {
     signing
     `java-library`
     `maven-publish`
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.7.20"
     id("org.cadixdev.licenser") version "0.6.1"
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
