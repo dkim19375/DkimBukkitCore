@@ -35,7 +35,7 @@ dependencies {
     api("io.github.dkim19375:dkimcore:1.4.0")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
 
-    compileOnly("me.clip:placeholderapi:2.11.2")
+    compileOnly("me.clip:placeholderapi:2.11.3")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     // compileOnly("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
