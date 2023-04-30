@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.dkim19375"
-version = "3.3.45"
+version = "3.4.0"
 
 val javaVersion = "1.8"
 
@@ -50,13 +50,14 @@ dependencies {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource.srcDirs)
+    archiveClassifier.set("sources")
 }
 
-val javadocJar by tasks.creating(Jar::class) {
+val dokkaHtmlJar by tasks.registering(Jar::class) {
+    dependsOn(tasks.dokkaHtml)
+    from(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
-    from(tasks.dokkaJavadoc)
 }
 
 publishing {
@@ -69,7 +70,7 @@ publishing {
             from(components["kotlin"])
 
             artifact(sourcesJar)
-            artifact(javadocJar)
+            artifact(dokkaHtmlJar)
 
             pom {
                 name.set("DkimBukkitCore")
@@ -103,7 +104,7 @@ publishing {
 
 nexusPublishing {
     packageGroup.set("io.github.dkim19375")
-    repositories {
+    this@nexusPublishing.repositories {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
