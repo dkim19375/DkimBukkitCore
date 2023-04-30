@@ -38,24 +38,18 @@ import kotlin.io.path.createDirectories
 
 /**
  * @param plugin The [JavaPlugin] extending class
- * @param fileName The name of the config file excluding file extensions.
- *
- * Please notice that the constructor does not yet create the YAML-configuration file. To create the file on the disk, use [ConfigFile.createConfig].
+ * @param file The [File] of the config
  **/
 
 @API
-class ConfigFile(
+class SpigotConfigFile(
     private val plugin: JavaPlugin,
-    private val fileName: String,
-    useDataFolder: Boolean = true,
-) : DataFile(fileName.let {
-    val name = it.replace('\\', '/')
-    if (useDataFolder) File(plugin.dataFolder, name) else File(name)
-}) {
+    file: File,
+) : DataFile(file) {
     @API
     var config: FileConfiguration
         private set
-    private val pluginDataFolder: File
+    private val parentFolder: File
         get() = file.parentFile
 
     init {
@@ -66,30 +60,14 @@ class ConfigFile(
     /**
      * This creates the configuration file. If the data folder is invalid, it will be created along with the config file.
      *
-     * @return true if the file was successfully created
+     * @return true if and only if the file was created
      */
     @API
-    fun createConfig(): Boolean {
-        var success = false
-        if (!file.exists()) {
-            if (!pluginDataFolder.exists() && pluginDataFolder.mkdir()) {
-                success = true
-            }
-            try {
-                if (file.createNewFile()) {
-                    success = true
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                success = false
-            }
-        }
-        return success
-    }
+    fun createConfig(): Boolean = (parentFolder.exists() != parentFolder.mkdirs()) && parentFolder.createNewFile()
 
     @API
-    fun addIfDoesntExist(key: String, value: String?) {
-        if (config.getString(key) == null) {
+    fun addIfDoesntExist(key: String, value: Any) {
+        if (config.get(key) == null) {
             config[key] = value
         }
     }
@@ -140,7 +118,7 @@ class ConfigFile(
      * This deletes the config file's directory and all it's contents.
      */
     @API
-    fun deleteDir(): Boolean = pluginDataFolder.deleteRecursively()
+    fun deleteDir(): Boolean = parentFolder.deleteRecursively()
 
     /**
      * @since 1.0.0
@@ -161,40 +139,24 @@ class ConfigFile(
     @API
     fun wipeDirectory() {
         deleteDir()
-        pluginDataFolder.toPath().createDirectories()
+        parentFolder.toPath().createDirectories()
     }
 
-    /**
-     * @since 1.0.0
-     * @param name The sub-directory's name.
-     * @return true if and only if the file or directory is
-     * successfully deleted; otherwise
-     * @throws IOException If the entered string has a file extension or already exists.
-     * This will create a sub-directory in the plugin's data folder, which can be accessed with [ConfigFile.pluginDataFolder]
-     * If the entered name is not a valid name for a directory or the sub-directory already exists or the data folder does not exist, an IOException will be thrown.
-     */
     @API
     fun createSubDirectory(name: String) {
-        pluginDataFolder.toPath().createDirectories()
-        val subDir = File(pluginDataFolder, name).toPath()
+        parentFolder.toPath().createDirectories()
+        val subDir = parentFolder.resolve(name).toPath()
         subDir.createDirectories()
     }
 
     /**
-     * @since 1.0.0
-     * @param value - Check if it contains the string
-     * @param ignoreDefault - Returns false if there is no set value, even if there is a default value
-     * @return true or false
-     * This returns true if the config contains the given value.
+     * This returns true if the config contains the given value, even if it has a default value.
      */
-    fun contains(value: String, ignoreDefault: Boolean = true): Boolean = if (ignoreDefault) {
-        config.isSet(value)
-    } else {
-        config.contains(value)
-    }
+    @API
+    fun containsIgnoreDefault(value: String): Boolean = config.isSet(value)
 
     private fun getResource(): InputStream? =
-        plugin.javaClass.classLoader.getResourceAsStream(fileName) ?: plugin.javaClass.getResourceAsStream(fileName)
+        plugin.javaClass.classLoader.getResourceAsStream(file.name) ?: plugin.javaClass.getResourceAsStream(file.name)
 
     @API
     fun saveDefaultConfig() {
@@ -212,4 +174,13 @@ class ConfigFile(
         path.parent.createDirectories()
         Files.copy(resource, path)
     }
+
+    /**
+     * This returns true if the config contains the given value OR if it has a default value.
+     */
+    operator fun contains(path: String): Boolean = path in config
+
+    operator fun set(path: String, value: Any) = config.set(path, value)
+
+    inline operator fun <reified V> get(path: String, default: V? = null): V? = config.get(path, default) as? V
 }
