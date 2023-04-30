@@ -28,13 +28,16 @@ import me.dkim19375.dkimbukkitcore.data.HelpMessage
 import me.dkim19375.dkimbukkitcore.data.HelpMessageFormat
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
+import me.dkim19375.dkimcore.extension.runCatchingOrNull
 import me.dkim19375.dkimcore.extension.toUUID
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permissible
+import java.lang.reflect.Method
 import java.util.*
 import kotlin.math.ceil
 
@@ -47,6 +50,17 @@ fun String.toPlayer(): Player? {
     val uuid = toUUID() ?: return null
     return Bukkit.getPlayer(uuid)
 }
+
+private val getOfflinePlayerIfCached: Method? by lazy {
+    runCatchingOrNull {
+        Bukkit::class.java.getMethod("getOfflinePlayerIfCached", String::class.java) // Paper only
+    }
+}
+
+@API
+fun String.toOfflinePlayer(): OfflinePlayer? = toUUID()?.let(Bukkit::getOfflinePlayer)
+    ?: Bukkit.getPlayer(this)
+    ?: (getOfflinePlayerIfCached?.invoke(null, this) as? OfflinePlayer)
 
 /**
  * Show help message
