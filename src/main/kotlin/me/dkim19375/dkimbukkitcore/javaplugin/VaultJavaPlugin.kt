@@ -32,11 +32,11 @@ import net.milkbowl.vault.permission.Permission
 @API
 abstract class VaultJavaPlugin : CoreJavaPlugin() {
     @API
-    lateinit var econ: Economy
+    var economy: Economy? = null
     @API
-    lateinit var permissions: Permission
+    var permissions: Permission? = null
     @API
-    lateinit var chat: Chat
+    var chat: Chat? = null
 
     override fun onEnable() {
         setupEconomy()
@@ -52,8 +52,8 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
         val rsp = server.servicesManager.getRegistration(
             Economy::class.java
         ) ?: return false
-        econ = rsp.provider
-        return this::econ.isInitialized
+        economy = rsp.provider
+        return economy != null
     }
 
     @API
@@ -65,7 +65,7 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
             Chat::class.java
         ) ?: return false
         chat = rsp.provider
-        return this::chat.isInitialized
+        return chat != null
     }
 
     @API
@@ -77,6 +77,6 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
             Permission::class.java
         ) ?: return false
         permissions = rsp.provider
-        return this::permissions.isInitialized
+        return permissions != null
     }
 }
