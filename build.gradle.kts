@@ -89,6 +89,7 @@ publishing {
                 developers {
                     developer {
                         id.set("dkim19375")
+                        timezone.set("America/New_York")
                     }
                 }
 
