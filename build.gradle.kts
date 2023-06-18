@@ -95,7 +95,7 @@ publishing {
 
                 scm {
                     connection.set("scm:git:git://github.com/dkim19375/DkimBukkitCore.git")
-                    developerConnection.set("scm:git:ssh://git@github.com|dkim19375/DkimBukkitCore.git")
+                    developerConnection.set("scm:git:ssh://git@github.com:dkim19375/DkimBukkitCore.git")
                     url.set("https://github.com/dkim19375/DkimBukkitCore")
                 }
             }
