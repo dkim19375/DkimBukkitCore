@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.dkim19375"
-version = "3.4.1"
+version = "3.4.2"
 
 val javaVersion = "1.8"
 
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    api("io.github.dkim19375:dkimcore:1.4.0")
+    api("io.github.dkim19375:dkimcore:1.4.1")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
 
     compileOnly("me.clip:placeholderapi:2.11.3")
