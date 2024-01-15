@@ -80,8 +80,9 @@ fun CommandSender.showHelpMessage(
     commands: List<HelpMessage>,
     plugin: CoreJavaPlugin,
     format: HelpMessageFormat = HelpMessageFormat(),
+    maxPerPage: Int = 7,
 ) {
-    val maxPages = getMaxHelpPages(commands)
+    val maxPages = getMaxHelpPages(commands, maxPerPage)
     val replaceMap: Map<String, String> = mapOf(
         "name" to plugin.description.name,
         "version" to plugin.description.version,
@@ -97,7 +98,7 @@ fun CommandSender.showHelpMessage(
         sendMessageReplaced(header + helpPageHeader, replaceMap)
     }
     val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
-    for (i in ((page - 1) * 7) until page * 7) {
+    for (i in ((page - 1) * maxPerPage) until page * maxPerPage) {
         val cmd = newCommands.getOrNull(i) ?: continue
         sendHelpMsgFormatted(cmd, format, replaceMap)
     }
@@ -116,9 +117,9 @@ fun CommandSender.sendMessageReplaced(str: String?, replaceMap: Map<String, Stri
 }
 
 @API
-fun Permissible.getMaxHelpPages(commands: List<HelpMessage>): Int {
+fun Permissible.getMaxHelpPages(commands: List<HelpMessage>, maxPerPage: Int = 7): Int {
     val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
-    return ceil(newCommands.size.toDouble() / 7.0).toInt()
+    return ceil(newCommands.size.toDouble() / maxPerPage).toInt()
 }
 
 fun CommandSender.sendHelpMsgFormatted(
