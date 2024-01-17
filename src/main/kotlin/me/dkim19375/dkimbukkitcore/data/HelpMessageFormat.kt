@@ -24,6 +24,7 @@
 
 package me.dkim19375.dkimbukkitcore.data
 
+import me.dkim19375.dkimcore.annotation.API
 import org.bukkit.ChatColor
 
 data class HelpMessageFormat(
@@ -33,4 +34,16 @@ data class HelpMessageFormat(
     val command: String? = "${ChatColor.YELLOW}/%label% ${ChatColor.GOLD}%arg% ${ChatColor.DARK_GRAY}- ${ChatColor.GRAY}%description%",
     val error: String? = "${ChatColor.RED}%error%",
     val bottomBar: String? = null,
-)
+) {
+    companion object {
+        @API
+        val MiniMessageDefault = HelpMessageFormat(
+            topBar = null,
+            header = "<yellow>%name% <gray>v%version%",
+            helpPageHeader = "<gray> Help Page: %page%/%maxpages%",
+            command = "<yellow>/%label% <gold>%arg% <dark_gray>- <gray>%description%",
+            error = "<red>%error%",
+            bottomBar = null,
+        )
+    }
+}

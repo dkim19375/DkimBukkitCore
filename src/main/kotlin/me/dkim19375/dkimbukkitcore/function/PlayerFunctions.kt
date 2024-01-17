@@ -38,7 +38,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permissible
 import java.lang.reflect.Method
-import java.util.*
+import java.util.UUID
 import kotlin.math.ceil
 
 @API
@@ -81,6 +81,7 @@ fun CommandSender.showHelpMessage(
     plugin: CoreJavaPlugin,
     format: HelpMessageFormat = HelpMessageFormat(),
     maxPerPage: Int = 7,
+    sendMessage: (String) -> Unit = this@showHelpMessage::sendMessage,
 ) {
     val maxPages = getMaxHelpPages(commands, maxPerPage)
     val replaceMap: Map<String, String> = mapOf(
@@ -91,24 +92,28 @@ fun CommandSender.showHelpMessage(
         "label" to label,
         "error" to (error ?: "")
     )
-    sendMessageReplaced(format.topBar, replaceMap)
+    sendMessageReplaced(format.topBar, replaceMap, sendMessage)
     val header = format.header
     if (header != null) {
         val helpPageHeader = if (maxPages <= 1) "" else format.helpPageHeader ?: ""
-        sendMessageReplaced(header + helpPageHeader, replaceMap)
+        sendMessageReplaced(header + helpPageHeader, replaceMap, sendMessage)
     }
     val newCommands = commands.filter { msg -> msg.permission?.let { hasPermission(it) } != false }
     for (i in ((page - 1) * maxPerPage) until page * maxPerPage) {
         val cmd = newCommands.getOrNull(i) ?: continue
-        sendHelpMsgFormatted(cmd, format, replaceMap)
+        sendHelpMsgFormatted(cmd, format, replaceMap, sendMessage)
     }
     error?.let {
-        sendMessageReplaced(format.error, replaceMap)
+        sendMessageReplaced(format.error, replaceMap, sendMessage)
     }
-    sendMessageReplaced(format.bottomBar, replaceMap)
+    sendMessageReplaced(format.bottomBar, replaceMap, sendMessage)
 }
 
-fun CommandSender.sendMessageReplaced(str: String?, replaceMap: Map<String, String>) {
+fun CommandSender.sendMessageReplaced(
+    str: String?,
+    replaceMap: Map<String, String>,
+    sendMessage: (String) -> Unit = this::sendMessage,
+) {
     var new = str ?: return
     sendMessage(str.let { _ ->
         replaceMap.forEach { new = new.replace("%${it.key}%", it.value) }
@@ -126,6 +131,7 @@ fun CommandSender.sendHelpMsgFormatted(
     message: HelpMessage,
     format: HelpMessageFormat,
     currentMap: Map<String, String>,
+    sendMessage: (String) -> Unit = this::sendMessage,
 ) {
     if (message.permission?.let { hasPermission(it) } == false) {
         return
@@ -136,7 +142,7 @@ fun CommandSender.sendHelpMsgFormatted(
             "description" to message.description
         )
     )
-    sendMessageReplaced(format.command, replaceMap)
+    sendMessageReplaced(format.command, replaceMap, sendMessage)
 }
 
 @API
