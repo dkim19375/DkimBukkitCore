@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "me.dkim19375"
-version = "3.4.5"
+version = "3.4.6"
 
 val javaVersion = "1.8"
 

@@ -43,7 +43,7 @@ import kotlin.math.ceil
 
 @API
 fun String.toPlayer(): Player? {
-    val usernamePlayer = Bukkit.getPlayer(this)
+    val usernamePlayer = Bukkit.getPlayerExact(this)
     if (usernamePlayer != null) {
         return usernamePlayer
     }
@@ -58,8 +58,8 @@ private val getOfflinePlayerIfCached: Method? by lazy {
 }
 
 @API
-fun String.toOfflinePlayer(): OfflinePlayer? = toUUID()?.let(Bukkit::getOfflinePlayer)
-    ?: Bukkit.getPlayer(this)
+fun String.toOfflinePlayer(): OfflinePlayer? = Bukkit.getPlayerExact(this)
+    ?: toUUID()?.let(Bukkit::getOfflinePlayer)
     ?: (getOfflinePlayerIfCached?.invoke(null, this) as? OfflinePlayer)
 
 /**
