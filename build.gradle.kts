@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    api("io.github.dkim19375:dkimcore:1.4.2")
+    api("io.github.dkim19375:dkimcore:1.5.0")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
 
     compileOnly("me.clip:placeholderapi:2.11.5")
