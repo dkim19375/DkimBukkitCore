@@ -42,11 +42,11 @@ dependencies {
 
     // testing libs
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.25")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.2")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
