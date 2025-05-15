@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
     id("org.jetbrains.dokka") version "2.0.0"
     id("org.cadixdev.licenser") version "0.6.1"
-    id("org.jetbrains.kotlin.jvm") version "1.9.25"
+    id("org.jetbrains.kotlin.jvm") version "2.1.21"
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
 }
 
@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     api("io.github.dkim19375:dkimcore:1.5.0")
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.25")
+    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.21")
 
     compileOnly("me.clip:placeholderapi:2.11.6")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
@@ -43,7 +43,7 @@ dependencies {
     // testing libs
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.9.25")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.21")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.2")
