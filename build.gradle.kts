@@ -1,140 +1,85 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import me.dkim19375.dkimgradle.data.pom.DeveloperData
+import me.dkim19375.dkimgradle.data.pom.LicenseData
+import me.dkim19375.dkimgradle.data.pom.SCMData
+import me.dkim19375.dkimgradle.enums.mavenAll
+import me.dkim19375.dkimgradle.util.addKotlinKDocSourcesJars
+import me.dkim19375.dkimgradle.util.setupJava
+import me.dkim19375.dkimgradle.util.setupPublishing
+import me.dkim19375.dkimgradle.util.spigotAPI
 
 plugins {
     signing
     `java-library`
     `maven-publish`
-    id("org.jetbrains.dokka") version "2.0.0"
-    id("org.cadixdev.licenser") version "0.6.1"
-    id("org.jetbrains.kotlin.jvm") version "2.1.21"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    alias(libs.plugins.dkim.gradle)
+    alias(libs.plugins.dokkatoo)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.licenser)
+    alias(libs.plugins.nexus.publish)
+    alias(libs.plugins.spotless)
 }
 
 group = "me.dkim19375"
-version = "3.4.7"
+version = "3.5.0"
 
-val javaVersion = "1.8"
-
-license {
-    header.set(rootProject.resources.text.fromFile("LICENSE"))
-    include("**/*.kt")
-}
+setupJava(javaVersion = JavaVersion.VERSION_11)
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io")
-    maven("https://maven.enginehub.org/repo/")
-    maven("https://repo.codemc.org/repository/maven-public/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    maven("https://s01.oss.sonatype.org/content/repositories/releases")
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    mavenAll()
 }
 
 dependencies {
-    api("io.github.dkim19375:dkimcore:1.5.0")
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.21")
+    api(libs.dkimcore)
+    api(libs.kotlin.stdlib)
 
-    compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
-    // compileOnly("org.codemc.worldguardwrapper:worldguardwrapper:1.2.0-SNAPSHOT")
+    compileOnly(spigotAPI("1.8.8"))
+    compileOnly(libs.placeholderapi)
+    compileOnly(libs.vault.api)
 
     // testing libs
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:2.1.21")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito.kotlin)
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
-    from(sourceSets.main.get().allSource.srcDirs)
-    archiveClassifier.set("sources")
+private object LibInfo {
+    const val ARTIFACT_ID = "dkim-bukkit-core"
+    const val DESCRIPTION = "A kotlin library used to making spigot plugins easier"
+    const val VCS_USERNAME = "dkim19375"
+    const val VCS_REPOSITORY = "DkimBukkitCore"
+    const val VCS = "github.com/$VCS_USERNAME/$VCS_REPOSITORY"
 }
 
-val dokkaHtmlJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaHtml)
-    from(tasks.dokkaHtml)
-    archiveClassifier.set("javadoc")
-}
+val artifacts = addKotlinKDocSourcesJars()
 
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            groupId = "io.github.dkim19375"
-            artifactId = "dkim-bukkit-core"
-            version = project.version as String
-
-            from(components["kotlin"])
-
-            artifact(sourcesJar)
-            artifact(dokkaHtmlJar)
-
-            pom {
-                name.set("DkimBukkitCore")
-                description.set("A kotlin library used to making spigot plugins easier!")
-                url.set("https://github.com/dkim19375/DkimBukkitCore")
-
-                packaging = "jar"
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/licenses/MIT")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("dkim19375")
-                        timezone.set("America/New_York")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:git://github.com/dkim19375/DkimBukkitCore.git")
-                    developerConnection.set("scm:git:ssh://git@github.com:dkim19375/DkimBukkitCore.git")
-                    url.set("https://github.com/dkim19375/DkimBukkitCore")
-                }
-            }
-        }
-    }
-}
-
-nexusPublishing {
-    packageGroup.set("io.github.dkim19375")
-    this@nexusPublishing.repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(project.findProperty("mavenUsername") as? String ?: return@sonatype)
-            password.set(project.findProperty("mavenPassword") as? String ?: return@sonatype)
-        }
-    }
-}
-
-signing.sign(publishing.publications["mavenJava"])
+setupPublishing(
+    groupId = "io.github.dkim19375",
+    artifactId = LibInfo.ARTIFACT_ID,
+    description = LibInfo.DESCRIPTION,
+    url = "https://${LibInfo.VCS}",
+    licenses = listOf(LicenseData.MIT),
+    developers = listOf(
+        DeveloperData(
+            id = "dkim19375",
+            roles = listOf("developer"),
+            timezone = "America/New_York",
+            url = "https://github.com/dkim19375",
+        )
+    ),
+    scm = SCMData.generateGit(
+        username = LibInfo.VCS_USERNAME,
+        repository = LibInfo.VCS_REPOSITORY,
+        developerSSH = true,
+    ),
+    publicationName = "mavenKotlin",
+    verifyMavenCentral = true,
+    artifacts = artifacts.javadocJarTasks.values.map(TaskProvider<Jar>::get) + artifacts.sourcesJarTask.get(),
+    setupNexusPublishing = System.getenv("GITHUB_ACTIONS") != "true",
+)
 
 tasks {
     withType<Test> {
         useJUnitPlatform()
-    }
-
-    withType<JavaCompile> {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-        options.encoding = "UTF-8"
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = javaVersion
-        }
-    }
-
-    withType<Wrapper> {
-        finalizedBy("licenseFormat")
     }
 }

@@ -26,32 +26,37 @@ package me.dkim19375.dkimbukkitcore.function
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.dkim19375.dkimcore.annotation.API
-import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import me.dkim19375.dkimcore.annotation.API
+import org.bukkit.Bukkit
+import org.bukkit.plugin.java.JavaPlugin
 
 fun URL.getJson(
-    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin,
+    consumer: (JsonObject) -> Unit,
+    exception: (IOException) -> Unit,
+    plugin: JavaPlugin,
 ) {
     if (!Bukkit.isPrimaryThread()) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) { getJson(consumer, exception, plugin) }
         return
     }
-    val string: String = try {
-        readText()
-    } catch (e: IOException) {
-        exception(e)
-        return
-    }
+    val string: String =
+        try {
+            readText()
+        } catch (e: IOException) {
+            exception(e)
+            return
+        }
     consumer(string.toJsonObject())
 }
 
 @API
 fun String.getJson(
-    consumer: (JsonObject) -> Unit, exception: (IOException) -> Unit, plugin: JavaPlugin,
+    consumer: (JsonObject) -> Unit,
+    exception: (IOException) -> Unit,
+    plugin: JavaPlugin,
 ) {
     try {
         URL(this).getJson(consumer, exception, plugin)

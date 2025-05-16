@@ -40,7 +40,9 @@ data class LocationWrapper(
 ) : ConfigurationSerializable {
 
     @API
-    constructor(loc: Location) : this(
+    constructor(
+        loc: Location
+    ) : this(
         world = loc.world ?: throw IllegalArgumentException("World must be set!"),
         x = loc.blockX,
         y = loc.blockY,
@@ -50,20 +52,19 @@ data class LocationWrapper(
     )
 
     @API
-    fun getLocation() = Location(
-        world,
-        x.toDouble() + 0.5,
-        y.toDouble(),
-        z.toDouble() + 0.5,
-        yaw.toFloat(),
-        pitch.toFloat()
-    )
+    fun getLocation() =
+        Location(
+            world,
+            x.toDouble() + 0.5,
+            y.toDouble(),
+            z.toDouble() + 0.5,
+            yaw.toFloat(),
+            pitch.toFloat(),
+        )
 
-    @API
-    fun getDistance(other: LocationWrapper): Double = getDistance(other.getLocation())
+    @API fun getDistance(other: LocationWrapper): Double = getDistance(other.getLocation())
 
-    @API
-    fun getDistance(other: Location): Double = getLocation().distance(other)
+    @API fun getDistance(other: Location): Double = getLocation().distance(other)
 
     @API
     fun coordsEquals(other: LocationWrapper?): Boolean {
@@ -95,14 +96,8 @@ data class LocationWrapper(
         return true
     }
 
-    override fun serialize(): Map<String, Any> = mapOf(
-        "world" to world.name,
-        "x" to x,
-        "y" to y,
-        "z" to z,
-        "yaw" to yaw,
-        "pitch" to pitch,
-    )
+    override fun serialize(): Map<String, Any> =
+        mapOf("world" to world.name, "x" to x, "y" to y, "z" to z, "yaw" to yaw, "pitch" to pitch)
 
     override fun hashCode(): Int {
         var result = world.name.hashCode()
@@ -123,14 +118,16 @@ data class LocationWrapper(
         if (format == "world: %world%, %x%, %y%, %z%") {
             return "world: ${world.name}, $x, $y, $z"
         }
-        return format.setPlaceholders(mapOf(
-            "world" to world.name,
-            "x" to x.toString(),
-            "y" to y.toString(),
-            "z" to z.toString(),
-            "yaw" to yaw.toString(),
-            "pitch" to pitch.toString()
-        ))
+        return format.setPlaceholders(
+            mapOf(
+                "world" to world.name,
+                "x" to x.toString(),
+                "y" to y.toString(),
+                "z" to z.toString(),
+                "yaw" to yaw.toString(),
+                "pitch" to pitch.toString(),
+            )
+        )
     }
 
     companion object {
@@ -148,5 +145,4 @@ data class LocationWrapper(
     }
 }
 
-@API
-fun Location.toWrapper(): LocationWrapper = LocationWrapper(this)
+@API fun Location.toWrapper(): LocationWrapper = LocationWrapper(this)

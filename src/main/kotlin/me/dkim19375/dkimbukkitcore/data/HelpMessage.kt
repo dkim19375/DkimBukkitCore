@@ -26,5 +26,4 @@ package me.dkim19375.dkimbukkitcore.data
 
 import me.dkim19375.dkimcore.annotation.API
 
-@API
-data class HelpMessage(val arg: String, val description: String, val permission: String?)
+@API data class HelpMessage(val arg: String, val description: String, val permission: String?)

@@ -24,6 +24,9 @@
 
 package me.dkim19375.dkimbukkitcore.function
 
+import java.lang.reflect.Method
+import java.util.UUID
+import kotlin.math.ceil
 import me.dkim19375.dkimbukkitcore.data.HelpMessage
 import me.dkim19375.dkimbukkitcore.data.HelpMessageFormat
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
@@ -37,9 +40,6 @@ import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.permissions.Permissible
-import java.lang.reflect.Method
-import java.util.UUID
-import kotlin.math.ceil
 
 @API
 fun String.toPlayer(): Player? {
@@ -58,9 +58,10 @@ private val getOfflinePlayerIfCached: Method? by lazy {
 }
 
 @API
-fun String.toOfflinePlayer(): OfflinePlayer? = Bukkit.getPlayerExact(this)
-    ?: toUUID()?.let(Bukkit::getOfflinePlayer)
-    ?: (getOfflinePlayerIfCached?.invoke(null, this) as? OfflinePlayer)
+fun String.toOfflinePlayer(): OfflinePlayer? =
+    Bukkit.getPlayerExact(this)
+        ?: toUUID()?.let(Bukkit::getOfflinePlayer)
+        ?: (getOfflinePlayerIfCached?.invoke(null, this) as? OfflinePlayer)
 
 /**
  * Show help message
@@ -84,14 +85,15 @@ fun CommandSender.showHelpMessage(
     sendMessage: (String) -> Unit = this@showHelpMessage::sendMessage,
 ) {
     val maxPages = getMaxHelpPages(commands, maxPerPage)
-    val replaceMap: Map<String, String> = mapOf(
-        "name" to plugin.description.name,
-        "version" to plugin.description.version,
-        "page" to page.toString(),
-        "maxpages" to maxPages.toString(),
-        "label" to label,
-        "error" to (error ?: "")
-    )
+    val replaceMap: Map<String, String> =
+        mapOf(
+            "name" to plugin.description.name,
+            "version" to plugin.description.version,
+            "page" to page.toString(),
+            "maxpages" to maxPages.toString(),
+            "label" to label,
+            "error" to (error ?: ""),
+        )
     sendMessageReplaced(format.topBar, replaceMap, sendMessage)
     val header = format.header
     if (header != null) {
@@ -103,9 +105,7 @@ fun CommandSender.showHelpMessage(
         val cmd = newCommands.getOrNull(i) ?: continue
         sendHelpMsgFormatted(cmd, format, replaceMap, sendMessage)
     }
-    error?.let {
-        sendMessageReplaced(format.error, replaceMap, sendMessage)
-    }
+    error?.let { sendMessageReplaced(format.error, replaceMap, sendMessage) }
     sendMessageReplaced(format.bottomBar, replaceMap, sendMessage)
 }
 
@@ -115,10 +115,12 @@ fun CommandSender.sendMessageReplaced(
     sendMessage: (String) -> Unit = this::sendMessage,
 ) {
     var new = str ?: return
-    sendMessage(str.let { _ ->
-        replaceMap.forEach { new = new.replace("%${it.key}%", it.value) }
-        new
-    })
+    sendMessage(
+        str.let { _ ->
+            replaceMap.forEach { new = new.replace("%${it.key}%", it.value) }
+            new
+        }
+    )
 }
 
 @API
@@ -136,12 +138,8 @@ fun CommandSender.sendHelpMsgFormatted(
     if (message.permission?.let { hasPermission(it) } == false) {
         return
     }
-    val replaceMap = currentMap.plus(
-        mapOf(
-            "arg" to message.arg,
-            "description" to message.description
-        )
-    )
+    val replaceMap =
+        currentMap.plus(mapOf("arg" to message.arg, "description" to message.description))
     sendMessageReplaced(format.command, replaceMap, sendMessage)
 }
 
@@ -162,5 +160,4 @@ fun Player.getItemAmount(type: Material): Int {
 fun Player.playSound(sound: Sound, volume: Float = 0.7f, pitch: Float = 1.0f) =
     playSound(location, sound, volume, pitch)
 
-@API
-fun Iterable<UUID>.getPlayers(): Set<Player> = mapNotNull(Bukkit::getPlayer).toSet()
+@API fun Iterable<UUID>.getPlayers(): Set<Player> = mapNotNull(Bukkit::getPlayer).toSet()

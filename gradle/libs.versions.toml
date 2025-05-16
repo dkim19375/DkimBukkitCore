@@ -1,0 +1,29 @@
+[versions]
+dkimcore = "1.5.2"
+dkim-gradle = "1.4.1"
+dokkatoo = "2.4.0"
+junit = "5.12.2"
+kotlin = "2.1.21"
+licenser = "0.6.1"
+mockito-kotlin = "5.4.0"
+nexus-publish-plugin = "2.0.0"
+placeholderapi = "2.11.6"
+spotless = "7.0.3"
+vault-api = "1.7.1"
+
+[libraries]
+dkimcore = { group = "io.github.dkim19375", name = "dkimcore", version.ref = "dkimcore" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
+placeholderapi = { group = "me.clip", name = "placeholderapi", version.ref = "placeholderapi" }
+vault-api = { group = "com.github.MilkBowl", name = "VaultAPI", version.ref = "vault-api" }
+
+[plugins]
+dkim-gradle = { id = "io.github.dkim19375.dkim-gradle", version.ref = "dkim-gradle" }
+dokkatoo = { id = "dev.adamko.dokkatoo", version.ref = "dokkatoo" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+licenser = { id = "org.cadixdev.licenser", version.ref = "licenser" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

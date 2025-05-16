@@ -33,7 +33,7 @@ abstract class PAPIExpansion(
     private val plugin: CoreJavaPlugin,
     private val identifier: String = plugin.name,
     private val authors: String = plugin.description.authors.joinToString(", "),
-    private val version: String = plugin.description.version
+    private val version: String = plugin.description.version,
 ) : PlaceholderExpansion() {
 
     override fun persist(): Boolean = true

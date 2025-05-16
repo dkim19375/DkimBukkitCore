@@ -24,15 +24,16 @@
 
 package me.dkim19375.dkimbukkitcore.util
 
-import me.dkim19375.dkimcore.annotation.API
-import org.bukkit.entity.Player
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import me.dkim19375.dkimcore.annotation.API
+import org.bukkit.entity.Player
 
 /**
  * Utility class for XP calculations
  *
- * Credit goes to [https://gist.github.com/Jikoo/30ec040443a4701b8980](https://gist.github.com/Jikoo/30ec040443a4701b8980)
+ * Credit goes to
+ * [https://gist.github.com/Jikoo/30ec040443a4701b8980](https://gist.github.com/Jikoo/30ec040443a4701b8980)
  * for the majority of this code
  */
 @API
@@ -44,8 +45,8 @@ object ExperienceUtil {
      * @return the amount of experience the Player has
      */
     @API
-    fun getTotalExperience(player: Player): Int = (getExpFromLevel(player.level)
-            + (getExpToNext(player.level) * player.exp).roundToInt())
+    fun getTotalExperience(player: Player): Int =
+        (getExpFromLevel(player.level) + (getExpToNext(player.level) * player.exp).roundToInt())
 
     /**
      * Calculate total experience based on level.
@@ -54,11 +55,12 @@ object ExperienceUtil {
      * @return the total experience calculated
      */
     @API
-    fun getExpFromLevel(level: Int): Int = when {
-        level > 30 -> (4.5 * level * level - 162.5 * level + 2220).toInt()
-        level > 15 -> (2.5 * level * level - 40.5 * level + 360).toInt()
-        else -> level * level + 6 * level
-    }
+    fun getExpFromLevel(level: Int): Int =
+        when {
+            level > 30 -> (4.5 * level * level - 162.5 * level + 2220).toInt()
+            level > 15 -> (2.5 * level * level - 40.5 * level + 360).toInt()
+            else -> level * level + 6 * level
+        }
 
     /**
      * Calculate level (including progress to next level) based on total experience.
@@ -104,28 +106,28 @@ object ExperienceUtil {
      * @param level the current level
      */
     @API
-    fun getExpToNext(level: Int): Int = when {
-        level >= 30 -> level * 9 - 158
-        level >= 15 -> level * 5 - 38
-        else -> level * 2 + 7
-    }
+    fun getExpToNext(level: Int): Int =
+        when {
+            level >= 30 -> level * 9 - 158
+            level >= 15 -> level * 5 - 38
+            else -> level * 2 + 7
+        }
 
     /**
      * Change a Player's experience.
      *
-     *
-     * This method is preferred over [Player.giveExp].
-     * <br></br>In older versions the method does not take differences in exp per level into account.
-     * This leads to overlevelling when granting players large amounts of experience.
-     * <br></br>In modern versions, while differing amounts of experience per level are accounted for, the
-     * approach used is loop-heavy and requires an excessive number of calculations, which makes it
-     * quite slow.
+     * This method is preferred over [Player.giveExp]. <br></br>In older versions the method does
+     * not take differences in exp per level into account. This leads to overlevelling when granting
+     * players large amounts of experience. <br></br>In modern versions, while differing amounts of
+     * experience per level are accounted for, the approach used is loop-heavy and requires an
+     * excessive number of calculations, which makes it quite slow.
      *
      * @param player the Player affected
      * @param exp the amount of experience to add or remove
      */
     @API
-    fun changeExp(player: Player, exp: Int) = setExp(player, (getTotalExperience(player) + exp).coerceAtLeast(0))
+    fun changeExp(player: Player, exp: Int) =
+        setExp(player, (getTotalExperience(player) + exp).coerceAtLeast(0))
 
     @API
     fun setExp(player: Player, exp: Int) {
@@ -137,11 +139,8 @@ object ExperienceUtil {
     }
 }
 
-@API
-fun Player.getActualTotalExp(): Int = ExperienceUtil.getTotalExperience(this)
+@API fun Player.getActualTotalExp(): Int = ExperienceUtil.getTotalExperience(this)
 
-@API
-fun Player.changeExp(exp: Int) = ExperienceUtil.changeExp(this, exp)
+@API fun Player.changeExp(exp: Int) = ExperienceUtil.changeExp(this, exp)
 
-@API
-fun Player.setActualTotalExp(exp: Int) = ExperienceUtil.setExp(this, exp)
+@API fun Player.setActualTotalExp(exp: Int) = ExperienceUtil.setExp(this, exp)

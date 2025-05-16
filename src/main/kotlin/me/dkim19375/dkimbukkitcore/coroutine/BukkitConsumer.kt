@@ -24,22 +24,19 @@
 
 package me.dkim19375.dkimbukkitcore.coroutine
 
+import java.util.concurrent.*
+import kotlin.coroutines.Continuation
 import me.dkim19375.dkimcore.async.*
 import me.dkim19375.dkimcore.extension.getResult
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
-import java.util.concurrent.*
-import kotlin.coroutines.Continuation
 
 class BukkitConsumer<T>(
     private val plugin: Plugin,
     private val async: Boolean = true,
     task: () -> T,
 ) : ActionConsumer<T>(task) {
-    override fun queue(
-        success: ((T) -> Unit),
-        failure: ((Throwable) -> Unit),
-    ) {
+    override fun queue(success: ((T) -> Unit), failure: ((Throwable) -> Unit)) {
         val runnable = {
             try {
                 success(task())
@@ -64,72 +61,81 @@ class BukkitConsumer<T>(
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("queue(success, failure)")
+        replaceWith = ReplaceWith("queue(success, failure)"),
     )
     override fun queueWithTimeout(
         timeout: Long,
         unit: TimeUnit,
         success: (T) -> Unit,
         failure: (Throwable) -> Unit,
-    ) = throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+    ) =
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("queue(success, failure)")
+        replaceWith = ReplaceWith("queue(success, failure)"),
     )
     override fun queueWithSafeTimeout(
         timeout: Long,
         unit: TimeUnit,
         success: (T?) -> Unit,
         failure: (Throwable) -> Unit,
-    ) = throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+    ) =
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("await(failure)")
+        replaceWith = ReplaceWith("await(failure)"),
     )
     override suspend fun awaitWithTimeout(
         timeout: Long,
         unit: TimeUnit,
         failure: (Continuation<T>, Throwable) -> Unit,
-    ): T = throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+    ): T =
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("await(failure)")
+        replaceWith = ReplaceWith("await(failure)"),
     )
     override suspend fun awaitWithSafeTimeout(
         timeout: Long,
         unit: TimeUnit,
         failure: (Continuation<T>, Throwable) -> Unit,
-    ): T = throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+    ): T =
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     override fun complete(): T = submit().getResult().getOrThrow()
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("complete()")
+        replaceWith = ReplaceWith("complete()"),
     )
     override fun completeWithTimeout(timeout: Long, unit: TimeUnit): T =
-        throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     @Deprecated(
         message = "Use a different type of ActionConsumer as the task in BukkitConsumer!",
-        replaceWith = ReplaceWith("complete()")
+        replaceWith = ReplaceWith("complete()"),
     )
     override fun completeWithSafeTimeout(timeout: Long, unit: TimeUnit): T =
-        throw UnsupportedOperationException("Use a different type of ActionConsumer as the task in BukkitConsumer!")
+        throw UnsupportedOperationException(
+            "Use a different type of ActionConsumer as the task in BukkitConsumer!"
+        )
 
     override fun submit(): CompletableFuture<T> {
         val future = CompletableFuture<T>()
-        queue(
-            success = {
-                future.complete(it)
-            },
-            failure = {
-                future.completeExceptionally(it)
-            }
-        )
+        queue(success = { future.complete(it) }, failure = { future.completeExceptionally(it) })
         return future
     }
 }

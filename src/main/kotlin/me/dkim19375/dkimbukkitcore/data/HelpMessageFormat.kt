@@ -31,19 +31,21 @@ data class HelpMessageFormat(
     val topBar: String? = null,
     val header: String? = "${ChatColor.YELLOW}%name% ${ChatColor.GRAY}v%version%",
     val helpPageHeader: String? = "${ChatColor.GRAY} Help Page: %page%/%maxpages%",
-    val command: String? = "${ChatColor.YELLOW}/%label% ${ChatColor.GOLD}%arg% ${ChatColor.DARK_GRAY}- ${ChatColor.GRAY}%description%",
+    val command: String? =
+        "${ChatColor.YELLOW}/%label% ${ChatColor.GOLD}%arg% ${ChatColor.DARK_GRAY}- ${ChatColor.GRAY}%description%",
     val error: String? = "${ChatColor.RED}%error%",
     val bottomBar: String? = null,
 ) {
     companion object {
         @API
-        val MiniMessageDefault = HelpMessageFormat(
-            topBar = null,
-            header = "<yellow>%name% <gray>v%version%",
-            helpPageHeader = "<gray> Help Page: %page%/%maxpages%",
-            command = "<yellow>/%label% <gold>%arg% <dark_gray>- <gray>%description%",
-            error = "<red>%error%",
-            bottomBar = null,
-        )
+        val MiniMessageDefault =
+            HelpMessageFormat(
+                topBar = null,
+                header = "<yellow>%name% <gray>v%version%",
+                helpPageHeader = "<gray> Help Page: %page%/%maxpages%",
+                command = "<yellow>/%label% <gold>%arg% <dark_gray>- <gray>%description%",
+                error = "<red>%error%",
+                bottomBar = null,
+            )
     }
 }

@@ -25,12 +25,12 @@
 package me.dkim19375.dkimbukkitcore.checker
 
 import com.google.gson.JsonObject
+import java.io.IOException
+import java.net.URL
 import me.dkim19375.dkimbukkitcore.function.getJson
 import me.dkim19375.dkimcore.annotation.API
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.IOException
-import java.net.URL
 
 @API
 class UpdateChecker(
@@ -44,7 +44,10 @@ class UpdateChecker(
     fun getSpigotVersion(version: (String) -> Unit, exception: (IOException) -> Unit) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
             try {
-                version(URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId").readText())
+                version(
+                    URL("https://api.spigotmc.org/legacy/update.php?resource=$resourceId")
+                        .readText()
+                )
             } catch (e: IOException) {
                 exception(e)
             }
@@ -65,10 +68,14 @@ class UpdateChecker(
     @API
     fun getFromGithubJson(version: (String) -> Unit, exception: (IOException) -> Unit) {
         val url = url ?: throw IllegalStateException()
-        url.getJson({ jsonObject: JsonObject ->
-            val element = jsonObject["tag_name"]
-            val tag = element.asString
-            version(tag)
-        }, exception, plugin)
+        url.getJson(
+            { jsonObject: JsonObject ->
+                val element = jsonObject["tag_name"]
+                val tag = element.asString
+                version(tag)
+            },
+            exception,
+            plugin,
+        )
     }
 }

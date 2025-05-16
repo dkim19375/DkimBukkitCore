@@ -24,6 +24,7 @@
 
 package me.dkim19375.dkimbukkitcore.function
 
+import java.util.logging.Level
 import me.clip.placeholderapi.PlaceholderAPI
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
 import me.dkim19375.dkimcore.annotation.API
@@ -31,12 +32,12 @@ import me.dkim19375.dkimcore.extension.runCatchingOrNull
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
-import java.util.logging.Level
 
 private val hasPAPI by lazy { Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") }
 
 @API
-fun String.color(altColorChar: Char = '&'): String = ChatColor.translateAlternateColorCodes(altColorChar, this)
+fun String.color(altColorChar: Char = '&'): String =
+    ChatColor.translateAlternateColorCodes(altColorChar, this)
 
 @API
 fun String.applyPAPI(player: OfflinePlayer?): String {
@@ -48,29 +49,25 @@ fun String.applyPAPI(player: OfflinePlayer?): String {
 
 @API
 fun String.formatAll(player: OfflinePlayer? = null, altColorChar: Char = '&') =
-    applyPAPI(player)
-        .color(altColorChar)
-        .formatLegacyHex()
-        .replace("%newline%", "\n")
+    applyPAPI(player).color(altColorChar).formatLegacyHex().replace("%newline%", "\n")
 
 private lateinit var storedPlugin: CoreJavaPlugin
+
 fun setLoggingPlugin(plugin: CoreJavaPlugin) {
     storedPlugin = plugin
 }
 
-@API
-fun logInfo(text: String, level: Level = Level.INFO) = storedPlugin.logger.log(level, text)
+@API fun logInfo(text: String, level: Level = Level.INFO) = storedPlugin.logger.log(level, text)
+
+@API fun String.log(level: Level = Level.INFO) = storedPlugin.logger.log(level, this)
 
 @API
-fun String.log(level: Level = Level.INFO) = storedPlugin.logger.log(level, this)
+fun Set<String>.formatAndRemoveColor(player: OfflinePlayer? = null): Set<String> =
+    map { it.formatAndRemoveColor(player) }.toSet()
 
 @API
-fun Set<String>.formatAndRemoveColor(player: OfflinePlayer? = null): Set<String> = map {
-    it.formatAndRemoveColor(player)
-}.toSet()
-
-@API
-fun String.formatAndRemoveColor(player: OfflinePlayer? = null): String = ChatColor.stripColor(formatAll(player)) ?: ""
+fun String.formatAndRemoveColor(player: OfflinePlayer? = null): String =
+    ChatColor.stripColor(formatAll(player)) ?: ""
 
 private val hexRegex = "(#[A-f\\d]{6})".toRegex()
 private val chatColorOfMethod by lazy {
@@ -80,8 +77,7 @@ private val chatColorOfMethod by lazy {
 }
 
 @API
-fun String.formatLegacyHex(): String = chatColorOfMethod?.let { method ->
-    hexRegex.replace(this) { result ->
-        method.invoke(null, result.value).toString()
-    }
-} ?: this
+fun String.formatLegacyHex(): String =
+    chatColorOfMethod?.let { method ->
+        hexRegex.replace(this) { result -> method.invoke(null, result.value).toString() }
+    } ?: this

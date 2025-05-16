@@ -31,12 +31,9 @@ import net.milkbowl.vault.permission.Permission
 
 @API
 abstract class VaultJavaPlugin : CoreJavaPlugin() {
-    @API
-    var economy: Economy? = null
-    @API
-    var permissions: Permission? = null
-    @API
-    var chat: Chat? = null
+    @API var economy: Economy? = null
+    @API var permissions: Permission? = null
+    @API var chat: Chat? = null
 
     override fun onEnable() {
         setupEconomy()
@@ -49,9 +46,7 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
         if (server.pluginManager.getPlugin("Vault") == null) {
             return false
         }
-        val rsp = server.servicesManager.getRegistration(
-            Economy::class.java
-        ) ?: return false
+        val rsp = server.servicesManager.getRegistration(Economy::class.java) ?: return false
         economy = rsp.provider
         return economy != null
     }
@@ -61,9 +56,7 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
         if (server.pluginManager.getPlugin("Vault") == null) {
             return false
         }
-        val rsp = server.servicesManager.getRegistration(
-            Chat::class.java
-        ) ?: return false
+        val rsp = server.servicesManager.getRegistration(Chat::class.java) ?: return false
         chat = rsp.provider
         return chat != null
     }
@@ -73,9 +66,7 @@ abstract class VaultJavaPlugin : CoreJavaPlugin() {
         if (server.pluginManager.getPlugin("Vault") == null) {
             return false
         }
-        val rsp = server.servicesManager.getRegistration(
-            Permission::class.java
-        ) ?: return false
+        val rsp = server.servicesManager.getRegistration(Permission::class.java) ?: return false
         permissions = rsp.provider
         return permissions != null
     }

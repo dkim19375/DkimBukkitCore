@@ -24,6 +24,7 @@
 
 package me.dkim19375.dkimbukkitcore.function
 
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import me.dkim19375.dkimbukkitcore.coroutine.BukkitConsumer
 import me.dkim19375.dkimbukkitcore.javaplugin.CoreJavaPlugin
@@ -35,49 +36,42 @@ import me.dkim19375.dkimcore.async.SyncConsumer
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.annotations.Contract
-import java.util.concurrent.TimeUnit
 
 private val plugin: CoreJavaPlugin by lazy { JavaPlugin.getPlugin(CoreJavaPlugin::class.java) }
 
 @API
-fun runSync(
-    timeout: Long = 0,
-    unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> Unit
-) = getSyncAction(task).let {
-    if (timeout <= 0) {
-        it.queue()
-    } else {
-        it.queueWithSafeTimeout(timeout, unit)
+fun runSync(timeout: Long = 0, unit: TimeUnit = TimeUnit.MILLISECONDS, task: () -> Unit) =
+    getSyncAction(task).let {
+        if (timeout <= 0) {
+            it.queue()
+        } else {
+            it.queueWithSafeTimeout(timeout, unit)
+        }
     }
-}
 
 @API
 suspend fun <T> runSyncAwait(
     timeout: Long = 0,
     unit: TimeUnit = TimeUnit.MILLISECONDS,
-    task: () -> T
-): T? = getSyncAction(task).let {
-    if (timeout <= 0) {
-        it.await()
-    } else {
-        it.awaitWithSafeTimeout(timeout, unit)
+    task: () -> T,
+): T? =
+    getSyncAction(task).let {
+        if (timeout <= 0) {
+            it.await()
+        } else {
+            it.awaitWithSafeTimeout(timeout, unit)
+        }
     }
-}
 
-@API
-fun <T> runSyncBlocking(task: () -> T): T = getSyncAction(task).complete()
+@API fun <T> runSyncBlocking(task: () -> T): T = getSyncAction(task).complete()
 
 @API
 @Contract(pure = true)
 fun <T> getSyncAction(task: () -> T): ActionConsumer<T> = BukkitConsumer(plugin, false, task)
 
 @API
-fun runAsync(
-    bukkit: Boolean = false,
-    scope: CoroutineScope? = null,
-    task: () -> Unit,
-) = getAsyncAction(bukkit, scope, task).queue()
+fun runAsync(bukkit: Boolean = false, scope: CoroutineScope? = null, task: () -> Unit) =
+    getAsyncAction(bukkit, scope, task).queue()
 
 @API
 fun runAsyncBukkit(task: () -> Unit) {
