@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "me.dkim19375"
-version = "3.5.0"
+version = "3.5.1"
 
 setupJava(javaVersion = JavaVersion.VERSION_11)
 
