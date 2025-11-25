@@ -1,5 +1,5 @@
 [versions]
-dkimcore = "1.6.2"
+dkimcore = "1.6.3"
 dkim-gradle = "1.4.8"
 dokkatoo = "2.4.0"
 junit = "5.14.1"
