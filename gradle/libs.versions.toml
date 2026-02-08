@@ -7,7 +7,7 @@ kotlin = "2.3.0"
 licenser = "0.6.1"
 mockito-kotlin = "6.2.3"
 nexus-publish-plugin = "2.0.0"
-placeholderapi = "2.11.7"
+placeholderapi = "2.12.2"
 spotless = "7.2.1"
 vault-api = "1.7.1"
 
