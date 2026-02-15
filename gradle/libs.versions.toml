@@ -2,7 +2,7 @@
 dkimcore = "1.6.3"
 dkim-gradle = "1.4.8"
 dokkatoo = "2.4.0"
-junit = "5.14.3"
+junit = "6.0.3"
 kotlin = "2.3.10"
 licenser = "0.6.1"
 mockito-kotlin = "6.2.3"
